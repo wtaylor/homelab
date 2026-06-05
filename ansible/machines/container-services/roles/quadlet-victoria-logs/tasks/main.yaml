@@ -37,6 +37,31 @@
       [Install]
       WantedBy=default.target
   register: container_definition
+- name: Create Loki Victoria Logs Proxy
+  become: true
+  containers.podman.podman_container:
+    name: loki-vl-proxy
+    state: quadlet
+    image: ghcr.io/reliablyobserve/loki-vl-proxy:1.23.0
+    command:
+    - "-backend=http://victoria-logs:9428"
+    network:
+    - podman
+    - observability-stack.network
+    ports:
+    - "3100:3100"
+    quadlet_options:
+    - |
+      [Unit]
+      RequiresMountsFor=/var/mnt/victorialogs/data
+
+      [Service]
+      Restart=on-failure
+      RestartSec=5s
+
+      [Install]
+      WantedBy=default.target
+  register: proxy_container_definition
 - name: systemd daemon-reload
   become: true
   ansible.builtin.systemd:
@@ -47,3 +72,9 @@
     name: victoria-logs
     enabled: true
     state: "{{ 'restarted' if container_definition.changed else 'started' }}"
+- name: (Re)start loki-vl-proxy service
+  become: true
+  ansible.builtin.systemd:
+    name: loki-vl-proxy
+    enabled: true
+    state: "{{ 'restarted' if proxy_container_definition.changed else 'started' }}"
