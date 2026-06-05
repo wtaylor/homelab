@@ -1,0 +1,9 @@
+resources:
+- https://github.com/kubernetes-csi/external-snapshotter/client/config/crd
+helmCharts:
+- releaseName: volsync
+  name: volsync
+  namespace: volsync-system
+  repo: https://backube.github.io/helm-charts/
+  version: "v0.15.0"
+  includeCRDs: true

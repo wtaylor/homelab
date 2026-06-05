@@ -1,0 +1,4 @@
+namespace: envoy-gateway-system
+resources:
+- https://github.com/envoyproxy/gateway/releases/download/v1.8.0/install.yaml
+- resources/gatewayclass.yaml
