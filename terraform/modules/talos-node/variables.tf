@@ -98,3 +98,7 @@ variable "node_labels" {
 variable "node_execute_talos_bootstrap" {
   type = bool
 }
+
+variable "certSANs" {
+  type = list(string)
+}

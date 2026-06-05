@@ -159,25 +159,15 @@ resource "talos_machine_configuration_apply" "node_mc" {
           disabled = true
         }
         apiServer = {
-          certSANs = ["red-squadron-talos.willtaylor.info"]
+          certSANs = var.certSANs
         }
         extraManifests = var.node_deploy_bootstrap_manifests ? [
           "https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/refs/tags/v0.9.1/deploy/standalone-install.yaml",
-          "https://raw.githubusercontent.com/wtaylor/device-config/refs/heads/main/kubernetes/bootstrap-utils/red-squadron-talos-argocd-rendered.yaml"
         ] : []
         inlineManifests = var.node_deploy_bootstrap_manifests ? [
           {
             name     = "cilium-install-job"
             contents = file("${path.module}/files/cilium-install-job.yaml")
-          },
-          {
-            name     = "argocd-namespace"
-            contents = <<EOF
-            apiVersion: v1
-            kind: Namespace
-            metadata:
-              name: argocd
-            EOF
           }
         ] : []
       }

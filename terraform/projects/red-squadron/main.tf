@@ -166,6 +166,7 @@ module "talos_nodes" {
   vm_cpu_cores         = each.value.cpu
   vm_memory            = each.value.memory
   vm_root_disk_size    = each.value.disk
+  certSANs             = ["red-squadron-talos.willtaylor.info"]
 
   vm_installer_cdrom_file_id = proxmox_virtual_environment_download_file.talos_iso[each.value.host_node_name].id
 
