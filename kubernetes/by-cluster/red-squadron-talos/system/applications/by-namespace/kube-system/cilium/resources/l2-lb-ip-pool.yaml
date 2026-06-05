@@ -4,4 +4,4 @@ metadata:
   name: cilium-l2-lb-ip-pool
 spec:
   blocks:
-  - cidr: 172.28.3.128/25
+  - cidr: 172.28.3.128/27
