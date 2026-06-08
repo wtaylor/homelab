@@ -1,13 +1,16 @@
 [tools]
 argocd = "2.13.3"
 "github:coreos/butane" = "0.25.1"
+jq = "1.8.1"
 opentofu = "1.11.1"
 python = { version = "3.13.1", virtualenv = ".venv" }
 terraform = "1.11.4"
 terragrunt = "0.96.1"
+usage = "3.4.0"
 uv = "0.5.11"
 vault = "1.18.3"
 velero = "1.14.0"
+yq = "4.53.3"
 
 [settings]
 experimental = true
@@ -21,3 +24,6 @@ VAULT_ADDR = "https://vault.tk831.net"
 
 [tasks.ansible_playbook]
 run = 'ansible-playbook -i ansible/common/inventory/ ansible/machines/{{arg(name="machine_playbook")}}'
+
+# [tasks.kanidm]
+# run = './kubernetes/by-cluster/single-spicy/workloads/applications/by-namespace/kanidm/kanidm/etc/kanidm.sh "$@"'

@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kanidm
+  labels:
+    app: kanidm
+spec:
+  serviceName: kanidm
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kanidm
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: server
+      labels:
+        app: kanidm
+    spec:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        fsGroup: 1000
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+      containers:
+      - name: server
+        image: docker.io/kanidm/server:1.10.3
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ALL]
+        ports:
+        - name: https
+          containerPort: 8443
+          protocol: TCP
+        - name: ldaps
+          containerPort: 3636
+          protocol: TCP
+        env:
+        - name: KANIDM_LOG_LEVEL
+          value: "info"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: config
+          mountPath: /data/server.toml
+          subPath: server.toml
+          readOnly: true
+        - name: tls
+          mountPath: /mnt/certs
+          readOnly: true
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+      volumes:
+      - name: config
+        configMap:
+          name: kanidm
+      - name: tls
+        secret:
+          secretName: kanidm-tls
+          defaultMode: 0600
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        app: kanidm
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi

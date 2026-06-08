@@ -5,16 +5,10 @@ metadata:
 data:
   url: https://argocd.tk831.net
   oidc.config: |
-    name: Keycloak
-    issuer: https://auth.tk831.net/realms/home
+    name: Kanidm
+    issuer: https://auth.w7x6t.dev/oauth2/openid/argocd
     clientID: argocd
-    clientSecret: $oidc.keycloak.clientSecret
-    requestedScopes: ["openid", "profile", "email", "groups"]
+    enablePKCEAuthentication: true
+    clientSecret: $oidc.client.clientSecret
+    requestedScopes: ["openid", "profile", "email", "groups_name"]
   kustomize.buildOptions: --enable-helm
-  resource.exclusions: |
-    - apiGroups:
-      - cilium.io
-      kinds:
-      - CiliumIdentity
-      clusters:
-      - "*"

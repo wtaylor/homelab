@@ -1,0 +1,17 @@
+version = "2"
+
+bindaddress = "0.0.0.0:8443"
+ldapbindaddress = "0.0.0.0:3636"
+
+db_path = "/data/kanidm.db"
+
+tls_chain = "/mnt/certs/tls.crt"
+tls_key = "/mnt/certs/tls.key"
+domain = "auth.w7x6t.dev"
+origin = "https://auth.w7x6t.dev"
+
+log_level = "info"
+
+[online_backup]
+path = "/data/backups"
+schedule = "00 22 * * *"

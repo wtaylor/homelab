@@ -5,3 +5,4 @@ metadata:
 data:
   policy.csv: |
     g, operators, role:admin
+  scopes: '[groups, groups_name, email]'

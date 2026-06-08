@@ -1,0 +1,10 @@
+namespace: kanidm
+configMapGenerator:
+- name: kanidm
+  files:
+  - files/server.toml
+resources:
+- resources/statefulset.yaml
+- resources/service.yaml
+- resources/certificate.yaml
+- resources/routes.yaml
