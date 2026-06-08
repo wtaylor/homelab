@@ -1,0 +1,51 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: data-kanidm-0-pvc-volsync-restic-config
+spec:
+  secretStoreRef:
+    name: vault
+    kind: ClusterSecretStore
+  refreshInterval: 60m
+  target:
+    template:
+      type: kubernetes.io/Opaque
+      data:
+        RESTIC_REPOSITORY: rest:http://data-backup-server.willtaylor.info:8080/volumes/kanidm-data
+        RESTIC_PASSWORD: "{{ .restic_password }}"
+        RESTIC_REST_USERNAME: "{{ .rclone_username }}"
+        RESTIC_REST_PASSWORD: "{{ .rclone_password }}"
+    deletionPolicy: Delete
+  data:
+  - secretKey: rclone_username
+    remoteRef:
+      key: kv/services/volsync/rclone-credentials
+      property: username
+  - secretKey: rclone_password
+    remoteRef:
+      key: kv/services/volsync/rclone-credentials
+      property: password
+  - secretKey: restic_password
+    remoteRef:
+      key: kv/services/volsync/restic-credentials
+      property: password
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: data-kanidm-0
+spec:
+  sourcePVC: data-kanidm-0
+  trigger:
+    # Take a backup every night at 4am
+    schedule: "00 4 * * *"
+  restic:
+    copyMethod: Direct
+    pruneIntervalDays: 7
+    repository: data-kanidm-0-pvc-volsync-restic-config
+    retain:
+      hourly: 1
+      daily: 7
+      weekly: 2
+      monthly: 2
+      yearly: 0

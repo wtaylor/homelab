@@ -1,0 +1,261 @@
+namespace: development
+resources:
+- ./resources/secret-config.yaml
+- ./resources/backup.yaml
+helmCharts:
+- name: forgejo
+  namespace: development
+  releaseName: forgejo
+  repo: oci://code.forgejo.org/forgejo-helm
+  version: 17.1.0
+  valuesInline:
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+        add:
+        - SYS_CHROOT
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsGroup: 1000
+      runAsNonRoot: true
+      runAsUser: 1000
+    service:
+      http:
+        type: ClusterIP
+        port: 80
+      ssh:
+        type: LoadBalancer
+        port: 22
+        loadBalancerIP:
+    httpRoute:
+      enabled: true
+      parentRefs:
+      - name: default
+        namespace: kube-system
+      hostnames: [scm.w7x6t.dev]
+      matches:
+        path:
+          type: PathPrefix
+          value: '/'
+      filters: []
+      # - type: RequestHeaderModifier
+      #   requestHeaderModifier:
+      #     set:
+      #       - name: X-Forwarded-Proto
+      #         value: https
+      port: 80
+      terminate: true
+    tcpRoute:
+      enabled: true
+      parentRefs:
+      - name: default
+        namespace: kube-system
+      port: 22
+    resources:
+      limits:
+        memory: 1024Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    ## @param deployment.env  Additional environment variables to pass to containers
+    ## @param deployment.terminationGracePeriodSeconds How long to wait until forcefully kill the pod
+    ## @param deployment.labels Labels for the deployment
+    ## @param deployment.annotations Annotations for the Forgejo deployment to be created
+    deployment:
+      terminationGracePeriodSeconds: 30
+    replicaCount: 1
+    persistence:
+      enabled: true
+      create: true
+      mount: true
+      claimName: forgejo-shared-storage
+      size: 256Gi
+      accessModes:
+      - ReadWriteOnce
+      storageClass: proxmox-zfs
+    initContainers:
+      resources:
+        limits: {}
+        requests:
+          cpu: 100m
+          memory: 128Mi
+    gitea:
+      admin:
+        username: gitea_admin
+        password: 'insecure_password123$'
+        email: 'gitea@local.domain'
+        passwordMode: initialOnlyRequireReset
+      metrics:
+        enabled: true
+        serviceMonitor:
+          enabled: false
+      ## @param gitea.additionalConfigSources Additional configuration from secret or configmap
+      additionalConfigSources:
+      - secret:
+          secretName: forgejo-config-secret
+      ## @param gitea.ssh.logLevel Configure OpenSSH's log level. Only available for root-based Forgejo image.
+      ssh:
+        logLevel: 'INFO'
+      ## @section `app.ini` overrides
+      ## @descriptionStart
+      ## Every value described in the [Cheat
+      ## Sheet](https://forgejo.org/docs/latest/admin/config-cheat-sheet/) can be
+      ## set as a Helm value. Configuration sections map to (lowercased) YAML
+      ## blocks, while the keys themselves remain in all caps.
+      ## @descriptionEnd
+      config:
+        # values in the DEFAULT section
+        # (https://forgejo.org/docs/latest/admin/config-cheat-sheet/#overall-default)
+        # are un-namespaced
+        APP_NAME: 'Forge. w7x6t.'
+        RUN_MODE: prod
+        ## @param gitea.config.repository General repository settings
+        repository: {}
+        ## @param gitea.config.cors Cross-origin resource sharing settings
+        cors: {}
+        ## @param gitea.config.ui User interface settings
+        ui: {}
+        ## @param gitea.config.markdown Markdown parser settings
+        markdown: {}
+        ## @param gitea.config.server [object] General server settings
+        server:
+          SSH_PORT: 22 # rootful image
+          SSH_LISTEN_PORT: 2222 # rootless image
+          DOMAIN: scm.w7x6t.dev
+          ROOT_URL: https://scm.w7x6t.dev
+          SSH_DOMAIN: scm.w7x6t.dev
+          LFS_START_SERVER: true
+          OFFLINE_MODE: true
+        ## @param gitea.config.database Database configuration (only necessary with an [externally managed DB](#external-database)).
+        database: {}
+        ## @param gitea.config.indexer Settings for what content is indexed and how
+        indexer: {}
+        ## @param gitea.config.queue Job queue configuration
+        queue: {}
+        ## @param gitea.config.admin Admin user settings
+        admin: {}
+        ## @param gitea.config.security Site security settings
+        security: {}
+        ## @param gitea.config.camo Settings for the [camo](https://github.com/cactus/go-camo) media proxy server (disabled by default)
+        camo: {}
+        ## @param gitea.config.openid Configuration for authentication with OpenID (disabled by default)
+        openid: {}
+        ## @param gitea.config.oauth2_client OAuth2 client settings
+        oauth2_client:
+          ENABLE_AUTO_REGISTRATION: true
+          USERNAME: preferred_username
+        ## @param gitea.config.service Configuration for miscellaneous Forgejo services
+        service:
+          REGISTER_EMAIL_CONFIRM: false
+          ENABLE_NOTIFY_MAIL: true
+          DISABLE_REGISTRATION: false
+          ENABLE_CAPTCHA: false
+          REQUIRE_SIGNIN_VIEW: false
+          DEFAULT_KEEP_EMAIL_PRIVATE: false
+          DEFAULT_ALLOW_CREATE_ORGANIZATION: true
+          DEFAULT_ENABLE_TIMETRACKING: true
+          NO_REPLY_ADDRESS: scm.w7x6t.dev
+          ALLOW_ONLY_EXTERNAL_REGISTRATION: true
+        ## @param gitea.config.ssh.minimum_key_sizes SSH minimum key sizes
+        ssh.minimum_key_sizes: {}
+        ## @param gitea.config.webhook Webhook settings
+        webhook: {}
+        ## @param gitea.config.mailer Mailer configuration (disabled by default)
+        mailer: {}
+        ## @param gitea.config.email.incoming Configuration for handling incoming mail (disabled by default)
+        email.incoming: {}
+        ## @param gitea.config.cache Cache configuration
+        cache: {}
+        ## @param gitea.config.session Session/cookie handling
+        session:
+          PROVIDER: db
+        ## @param gitea.config.picture User avatar settings
+        picture:
+          DISABLE_GRAVATAR: true
+          ENABLE_FEDERATED_AVATAR: false
+        ## @param gitea.config.project Project board defaults
+        project: {}
+        ## @param gitea.config.attachment Issue and PR attachment configuration
+        attachment: {}
+        ## @param gitea.config.log Logging configuration
+        log: {}
+        ## @param gitea.config.cron Cron job configuration
+        cron: {}
+        ## @param gitea.config.git Global settings for Git
+        git: {}
+        ## @param gitea.config.metrics Settings for the Prometheus endpoint (disabled by default)
+        metrics: {}
+        ## @param gitea.config.api Settings for the Swagger API documentation endpoints
+        api: {}
+        ## @param gitea.config.oauth2 Settings for the [OAuth2 provider](https://forgejo.org/docs/latest/admin/oauth2-provider/)
+        oauth2: {}
+        ## @param gitea.config.i18n Internationalization settings
+        i18n: {}
+        ## @param gitea.config.markup Configuration for advanced markup processors
+        markup: {}
+        ## @param gitea.config.highlight.mapping File extension to language mapping overrides for syntax highlighting
+        highlight.mapping: {}
+        ## @param gitea.config.time Locale settings
+        time: {}
+        ## @param gitea.config.migrations Settings for Git repository migrations
+        migrations: {}
+        ## @param gitea.config.federation Federation configuration
+        federation: {}
+        ## @param gitea.config.packages Package registry settings
+        packages: {}
+        ## @param gitea.config.mirror Configuration for repository mirroring
+        mirror: {}
+        ## @param gitea.config.lfs Large File Storage configuration
+        lfs: {}
+        ## @param gitea.config.repo-avatar Repository avatar storage configuration
+        repo-avatar: {}
+        ## @param gitea.config.avatar User/org avatar storage configuration
+        avatar: {}
+        ## @param gitea.config.storage General storage settings
+        storage: {}
+        ## @param gitea.config.proxy Proxy configuration (disabled by default)
+        proxy: {}
+        ## @param gitea.config.actions Configuration for [Forgejo Actions](https://forgejo.org/docs/latest/user/actions/)
+        actions: {}
+        ## @param gitea.config.other Uncategorized configuration options
+        other: {}
+      livenessProbe:
+        enabled: true
+        tcpSocket:
+          port: http
+        initialDelaySeconds: 20
+        timeoutSeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        failureThreshold: 10
+      readinessProbe:
+        enabled: true
+        httpGet:
+          path: /api/healthz
+          port: http
+        initialDelaySeconds: 5
+        timeoutSeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        failureThreshold: 3
+      startupProbe:
+        enabled: true
+        tcpSocket:
+          port: http
+        initialDelaySeconds: 20
+        timeoutSeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        failureThreshold: 10
+    # By default, removed or moved settings that still remain in a user defined values.yaml will cause Helm to fail running the install/update.
+    # Set it to false to skip this basic validation check.
+    ## @section Advanced
+    ## @param checkDeprecation Whether to run this basic validation check.
+    ## @param test.enabled Whether to use test-connection Pod.
+    ## @param test.image.name Image name for the wget container used in the test-connection Pod.
+    ## @param test.image.tag Image tag for the wget container used in the test-connection Pod.
+    test:
+      enabled: false
+    checkDeprecation: false
