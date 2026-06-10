@@ -1,0 +1,55 @@
+- name: Download forgejo-runner binary
+  become: true
+  ansible.builtin.get_url:
+    url: https://code.forgejo.org/forgejo/runner/releases/download/v12.10.2/forgejo-runner-12.10.2-linux-amd64
+    dest: /opt/forgejo-runner
+    owner: root
+    group: root
+    mode: "0755"
+- name: Copy runner config
+  become: true
+  ansible.builtin.copy:
+    content: "{{ actions_config | to_nice_yaml }}"
+    dest: "/home/{{ actions_user }}/runner-config.yaml"
+    owner: "{{ actions_user }}"
+    group: "{{ actions_user }}"
+    mode: "0640"
+- name: Copy runner systemd service
+  become: true
+  ansible.builtin.copy:
+    owner: root
+    group: root
+    mode: "0640"
+    dest: /etc/systemd/system/forgejo-runner.service
+    content: |
+      [Unit]
+      Description=Forgejo Runner
+      Documentation=https://forgejo.org/docs/latest/admin/actions/
+      After=docker.service
+
+      [Service]
+      ExecStart=/opt/forgejo-runner daemon -c /home/runner/runner-config.yaml
+      ExecReload=/bin/kill -s HUP $MAINPID
+
+      # This user and working directory must already exist
+      User=runner
+      WorkingDirectory=/home/runner
+      Restart=on-failure
+      # allow configured shutdown_timeout to be effective, rather than overridden by systemd
+      TimeoutStopSec=infinity
+      RestartSec=10
+
+      [Install]
+      WantedBy=multi-user.target
+- name: Start and enable docker.service
+  become: true
+  ansible.builtin.systemd:
+    name: docker.service
+    enabled: true
+    state: started
+- name: Start and enable forgejo-runner.service
+  become: true
+  ansible.builtin.systemd:
+    name: forgejo-runner.service
+    enabled: true
+    state: started

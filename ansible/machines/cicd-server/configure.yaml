@@ -1,0 +1,119 @@
+- hosts: cicd-server.willtaylor.info
+  remote_user: ansible
+  roles:
+  - role: ./roles/configure-actions-runner
+    actions_user: runner
+    actions_config:
+      log:
+        level: info
+        job_level: info
+      runner:
+        file: .runner
+        # Execute how many tasks concurrently at the same time.
+        capacity: 4
+        timeout: 3h
+        shutdown_timeout: 3h
+        insecure: false
+        fetch_timeout: 30s
+        fetch_interval: 2s
+        report_interval: 1s
+        labels:
+        - "host:host"
+        - "ubuntu-latest:docker://docker.io/library/ubuntu:24.04"
+        - "ubuntu-lts:docker://docker.io/library/ubuntu:24.04"
+        - "ubuntu-24.04:docker://docker.io/library/ubuntu:24.04"
+        - "ubuntu-22.04:docker://docker.io/library/ubuntu:22.04"
+        - "debian-latest:docker://docker.io/library/debian:13"
+        - "debian-trixie:docker://docker.io/library/debian:13"
+        - "debian-bookworm:docker://docker.io/library/debian:12"
+        - "alpine-latest:docker://docker.io/library/alpine:3.23"
+      cache:
+        enabled: true
+        port: 0
+        # If empty, the cache data will be stored in $HOME/.cache/actcache.
+        dir: ""
+      container:
+        enable_ipv6: false
+        privileged: false
+        docker_host: "automount"
+        force_pull: false
+        force_rebuild: false
+      host:
+        # The parent directory of a job's working directory.
+        # If it's empty, $HOME/.cache/act/ will be used.
+        workdir_parent: ""
+      server:
+        connections:
+          w7x6t:
+            url: https://scm.w7x6t.dev/
+            uuid: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/cicd-server/forgejo-runner-credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.uuid }}"
+            token: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/cicd-server/forgejo-runner-credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.token }}"
+          codeberg:
+            url: https://codeberg.org/
+            uuid: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/cicd-server/codeberg-runner-credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.uuid }}"
+            token: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/cicd-server/codeberg-runner-credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.token }}"
+            labels:
+            - "ubuntu-latest:docker://docker.io/library/ubuntu:24.04"
+            - "ubuntu-lts:docker://docker.io/library/ubuntu:24.04"
+            - "ubuntu-24.04:docker://docker.io/library/ubuntu:24.04"
+            - "ubuntu-22.04:docker://docker.io/library/ubuntu:22.04"
+            - "debian-latest:docker://docker.io/library/debian:13"
+            - "debian-trixie:docker://docker.io/library/debian:13"
+            - "debian-bookworm:docker://docker.io/library/debian:12"
+            - "alpine-latest:docker://docker.io/library/alpine:3.23"
+  - role: ../../common/roles/vector-agent
+    vector_config:
+      data_dir: /opt/vector/data
+      api:
+        enabled: true
+      schema:
+        log_namespace: true
+      sources:
+        vector_logs:
+          type: internal_logs
+        journald:
+          type: journald
+        host_metrics:
+          type: host_metrics
+          scrape_interval_secs: 60
+          filesystem:
+            devices:
+              excludes: [binfmt_misc]
+            filesystems:
+              includes:
+              - ext*
+              - xfs
+              - ntfs
+              - btrfs
+              - zfs
+              - vfat
+              - fat32
+            mountPoints:
+              excludes:
+              - "*/proc/sys/fs/binfmt_misc"
+              - "/var/lib/containers/**"
+        vector_internal_metrics:
+          type: internal_metrics
+          scrape_interval_secs: 60
+      transforms:
+        mapped_journal_logs:
+          type: remap
+          inputs: [journald]
+          source: |-
+            .message = .
+            .timestamp = %journald.timestamp
+            .host = %journald.host
+            .service = %journald.metadata._SYSTEMD_UNIT
+      sinks:
+        console:
+          type: console
+          inputs: ["vector_logs"]
+          encoding:
+            codec: text
+        vector_server:
+          type: vector
+          inputs: [host_metrics, mapped_journal_logs, vector_internal_metrics]
+          address: http://vector.tk831.net:6001
+          version: "2"
+          tls:
+            enabled: false
