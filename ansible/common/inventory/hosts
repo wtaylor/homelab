@@ -16,6 +16,7 @@ rootn.willtaylor.info
 openbao-server.willtaylor.info
 nas-omv.willtaylor.info
 cicd-server.willtaylor.info
+ai-sandbox.willtaylor.info
 
 [all:vars]
 ansible_python_interpreter=auto_silent

@@ -1,0 +1,30 @@
+- name: Ensure user directories exist
+  loop:
+  - code
+  - .config
+  - .config/opencode
+  - .local
+  - .local/bin
+  become: true
+  ansible.builtin.file:
+    path: "/var/home/wtaylor-ai/{{ item }}"
+    state: directory
+    owner: wtaylor-ai
+    group: wtaylor-ai
+    mode: "750"
+- name: Copy global AGENTS.md
+  become: true
+  ansible.builtin.copy:
+    src: AGENTS.md
+    dest: /var/home/wtaylor-ai/.config/opencode/AGENTS.md
+    owner: wtaylor-ai
+    group: wtaylor-ai
+    mode: "0440"
+- name: Copy skills
+  become: true
+  ansible.builtin.copy:
+    src: skills
+    dest: /var/home/wtaylor-ai/.config/opencode/
+    owner: wtaylor-ai
+    group: wtaylor-ai
+    mode: "0440"
