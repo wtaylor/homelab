@@ -26,7 +26,7 @@ spec:
         runAsNonRoot: true
       containers:
       - name: server
-        image: docker.io/kanidm/server:1.10.3
+        image: docker.io/kanidm/server:1.11.0
         imagePullPolicy: IfNotPresent
         securityContext:
           allowPrivilegeEscalation: false
