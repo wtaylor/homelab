@@ -218,7 +218,8 @@ helmCharts:
         ## @param gitea.config.proxy Proxy configuration (disabled by default)
         proxy: {}
         ## @param gitea.config.actions Configuration for [Forgejo Actions](https://forgejo.org/docs/latest/user/actions/)
-        actions: {}
+        actions:
+          DEFAULT_ACTIONS_URL: https://scm.w7x6t.dev
         ## @param gitea.config.other Uncategorized configuration options
         other: {}
       livenessProbe:
