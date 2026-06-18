@@ -53,3 +53,54 @@
     name: forgejo-runner.service
     enabled: true
     state: started
+- name: Install SELinux policy for docker.sock access from containers
+  become: true
+  vars:
+    selinux_module_name: docker-sock-runner
+    selinux_module_dir: /etc/selinux/local
+  block:
+  - name: Ensure local SELinux module directory exists
+    ansible.builtin.file:
+      path: "{{ selinux_module_dir }}"
+      state: directory
+      owner: root
+      group: root
+      mode: "0700"
+  - name: Deploy SELinux type enforcement (.te) source
+    ansible.builtin.copy:
+      dest: "{{ selinux_module_dir }}/{{ selinux_module_name }}.te"
+      owner: root
+      group: root
+      mode: "0600"
+      content: |
+        module docker-sock-runner 1.0;
+
+        require {
+                type container_runtime_t;
+                type container_t;
+                type container_var_run_t;
+                class sock_file write;
+                class unix_stream_socket connectto;
+        }
+
+        #============= container_t ==============
+        allow container_t container_runtime_t:unix_stream_socket connectto;
+        allow container_t container_var_run_t:sock_file write;
+    register: selinux_te
+  - name: Check whether the SELinux module is already installed
+    ansible.builtin.command:
+      cmd: "semodule -l"
+    register: selinux_modules
+    changed_when: false
+  - name: Compile and install the SELinux module
+    ansible.builtin.shell:
+      cmd: |
+        set -euo pipefail
+        cd "{{ selinux_module_dir }}"
+        checkmodule -M -m -o "{{ selinux_module_name }}.mod" "{{ selinux_module_name }}.te"
+        semodule_package -o "{{ selinux_module_name }}.pp" -m "{{ selinux_module_name }}.mod"
+        semodule -i "{{ selinux_module_name }}.pp"
+      executable: /bin/bash
+    when: selinux_te.changed or selinux_module_name not in selinux_modules.stdout
+    register: selinux_install
+    changed_when: selinux_install.rc == 0

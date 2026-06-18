@@ -32,7 +32,8 @@
         dir: ""
       container:
         enable_ipv6: false
-        privileged: false
+        privileged: true
+        options: "--device /dev/fuse"
         docker_host: "automount"
         force_pull: false
         force_rebuild: false

@@ -2,6 +2,7 @@ namespace: development
 resources:
 - ./resources/secret-config.yaml
 - ./resources/backup.yaml
+- ./resources/envoy-btp.yaml
 helmCharts:
 - name: forgejo
   namespace: development
@@ -39,6 +40,9 @@ helmCharts:
         path:
           type: PathPrefix
           value: '/'
+        timeouts:
+          request: 0s
+          backendRequest: 0s
       filters: []
       # - type: RequestHeaderModifier
       #   requestHeaderModifier:
@@ -55,7 +59,7 @@ helmCharts:
       port: 22
     resources:
       limits:
-        memory: 1024Mi
+        memory: 4096Mi
       requests:
         cpu: 100m
         memory: 256Mi
