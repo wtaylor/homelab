@@ -5,7 +5,7 @@ metadata:
 spec:
   project: w7x6t
   source:
-    repoURL: https://gitea.tk831.net/w7x6t/root-app-of-apps.git
+    repoURL: https://scm.w7x6t.dev/w7x6t/root-app-of-apps.git
     path: ./by-cluster/red-squadron/app-of-apps
     targetRevision: HEAD
   destination:

@@ -5,7 +5,7 @@ metadata:
 spec:
   project: tk831
   source:
-    repoURL: https://github.com/wtaylor/device-config.git
+    repoURL: https://scm.w7x6t.dev/wtaylor/homelab.git
     path: ./kubernetes/by-cluster/red-squadron-talos/tk831/app-of-apps
     targetRevision: HEAD
   destination:

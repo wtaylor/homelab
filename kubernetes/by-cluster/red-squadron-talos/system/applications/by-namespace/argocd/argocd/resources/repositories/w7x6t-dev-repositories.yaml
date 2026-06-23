@@ -5,7 +5,7 @@ metadata:
     managed-by: argocd.argoproj.io
   labels:
     argocd.argoproj.io/secret-type: repository
-  name: gitea-ops-repositories
+  name: w7x6t-dev-repositories
 stringData:
   type: git
-  url: https://gitea.willtaylor.info/Ops/*
+  url: https://scm.w7x6t.dev/*

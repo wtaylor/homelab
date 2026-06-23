@@ -6,7 +6,7 @@ spec:
   goTemplate: true
   generators:
   - git:
-      repoURL: https://github.com/wtaylor/device-config.git
+      repoURL: https://scm.w7x6t.dev/wtaylor/homelab.git
       revision: HEAD
       directories:
       - path: kubernetes/by-cluster/red-squadron-talos/blunge/applications/by-namespace/*/*
@@ -16,7 +16,7 @@ spec:
     spec:
       project: blunge
       source:
-        repoURL: https://github.com/wtaylor/device-config.git
+        repoURL: https://scm.w7x6t.dev/wtaylor/homelab.git
         targetRevision: HEAD
         path: '{{.path.path}}'
       destination:

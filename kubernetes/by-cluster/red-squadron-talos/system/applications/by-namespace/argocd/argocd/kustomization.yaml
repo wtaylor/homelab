@@ -7,14 +7,12 @@ resources:
 - ./resources/routes.yaml
 - ./resources/oidc-credentials.yaml
 # Repository Credentials
-- ./resources/repository-credentials/wtaylor-gitea-credentials.yaml
-- ./resources/repository-credentials/wtaylor-gitea-credentials-old.yaml
+- ./resources/repository-credentials/codeberg-wtaylor-credentials.yaml
+- ./resources/repository-credentials/w7x6t-dev-credentials.yaml
 - ./resources/repository-credentials/wtaylor-github-credentials.yaml
 # Repositories
-- ./resources/repositories/gitea-ops-repositories.yaml
-- ./resources/repositories/gitea-wtaylor-repositories.yaml
-- ./resources/repositories/gitea-ops-repositories-old.yaml
-- ./resources/repositories/gitea-wtaylor-repositories-old.yaml
+- ./resources/repositories/codeberg-wtaylor-repositories.yaml
+- ./resources/repositories/w7x6t-dev-repositories.yaml
 - ./resources/repositories/github-wtaylor-repositories.yaml
 patches:
 - path: ./patches/argocd-cmd-params-cm.yaml
