@@ -1,0 +1,38 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: tk831
+helmCharts:
+- name: nats
+  includeCRDs: true
+  repo: https://nats-io.github.io/k8s/helm/charts/
+  releaseName: nats
+  namespace: tk831
+  version: "1.1.12"
+  valuesInline:
+    config:
+      cluster:
+        enabled: false
+      jetstream:
+        enabled: true
+        fileStore:
+          enabled: true
+          pvc:
+            enabled: true
+            size: 40Gi
+            storageClassName: proxmox-zfs
+      mqtt:
+        enabled: true
+      promExporter:
+        enabled: true
+      merge:
+        $include: ../nats-secret-config/auth.conf
+    natsBox:
+      enabled: false
+resources:
+- resources/nats-secret-config.yaml
+patches:
+- target:
+    kind: StatefulSet
+    name: nats
+  path: patches/add-secret-config-to-statefulset.yaml
+- path: patches/convert-service-to-loadbalancer.yaml

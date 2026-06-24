@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zigbee2mqtt
+  labels:
+    app.kubernetes.io/name: zigbee2mqtt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zigbee2mqtt
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: zigbee2mqtt
+    spec:
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: zigbee2mqtt-data
+      containers:
+      - name: zigbee2mqtt
+        image: ghcr.io/koenkk/zigbee2mqtt:2.10.1
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: TZ
+          value: Europe/London
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        volumeMounts:
+        - name: data
+          mountPath: /app/data

@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: joplin
+  labels:
+    app.kubernetes.io/name: joplin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: joplin
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: joplin
+    spec:
+      securityContext:
+        fsGroup: 1001
+      volumes:
+      - name: joplin-data
+        persistentVolumeClaim:
+          claimName: joplin-data-pvc
+      containers:
+      - name: joplin
+        image: joplin/server:3.5.2
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: joplin
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: joplin-db-credentials
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: joplin-db-credentials
+              key: password
+        - name: STORAGE_DRIVER
+          value: Type=Filesystem; Path=/mnt/joplin-data
+          # valueFrom:
+          #   secretKeyRef:
+          #     name: joplin-s3-credentials
+          #     key: storageDriver
+        ports:
+        - containerPort: 22300
+          name: http
+          protocol: TCP
+        volumeMounts:
+        - name: joplin-data
+          mountPath: /mnt/joplin-data

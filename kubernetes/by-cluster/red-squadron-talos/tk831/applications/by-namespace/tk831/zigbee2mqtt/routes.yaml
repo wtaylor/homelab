@@ -1,0 +1,68 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: zigbee2mqtt-oidc-client-credentials
+spec:
+  secretStoreRef:
+    name: vault
+    kind: ClusterSecretStore
+  refreshInterval: 5m
+  data:
+  - secretKey: client-secret
+    remoteRef:
+      key: kv/services/zigbee2mqtt/oauth-client-credentials
+      property: client_secret
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: zigbee2mqtt-oidc
+spec:
+  targetRefs:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: zigbee2mqtt-https
+  oidc:
+    provider:
+      issuer: https://auth.w7x6t.dev/oauth2/openid/zigbee2mqtt
+    clientID: zigbee2mqtt
+    clientSecret:
+      name: zigbee2mqtt-oidc-client-credentials
+    redirectURL: "https://zigbee2mqtt.tk831.net/oauth2/callback"
+    logoutPath: "/oauth2/logout"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: zigbee2mqtt-http
+spec:
+  parentRefs:
+  - name: default
+    namespace: kube-system
+    sectionName: http
+  hostnames: [zigbee2mqtt.tk831.net]
+  rules:
+  - filters:
+    - type: RequestRedirect
+      requestRedirect:
+        scheme: https
+        statusCode: 301
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: zigbee2mqtt-https
+spec:
+  parentRefs:
+  - name: default
+    namespace: kube-system
+    sectionName: https
+  hostnames: [zigbee2mqtt.tk831.net]
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: zigbee2mqtt
+      port: 80

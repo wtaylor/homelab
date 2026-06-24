@@ -10,9 +10,11 @@ spec:
       revision: HEAD
       directories:
       - path: by-cluster/red-squadron/applications/by-namespace/*/*
+  syncPolicy:
+    preserveResourcesOnDeletion: true
   template:
     metadata:
-      name: 'tk831-media-{{.path.basename}}'
+      name: 'tk831-{{.path.basename}}'
     spec:
       project: tk831
       source:

@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodered
+  labels:
+    app.kubernetes.io/name: nodered
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nodered
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: nodered
+    spec:
+      volumes:
+      - name: config
+        configMap:
+          name: nodered-cm
+      - name: data
+        persistentVolumeClaim:
+          claimName: nodered-data
+      containers:
+      - name: nodered
+        image: nodered/node-red:4.1.11-debian
+        imagePullPolicy: IfNotPresent
+        args: [--settings=/config/settings.js]
+        env:
+        - name: TZ
+          value: Europe/London
+        - name: OAUTH_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: nodered-oauth-client-credentials
+              key: client_id
+        - name: OAUTH_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: nodered-oauth-client-credentials
+              key: client_secret
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+        ports:
+        - containerPort: 1880
+          name: http
+          protocol: TCP
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: config
+          mountPath: /config

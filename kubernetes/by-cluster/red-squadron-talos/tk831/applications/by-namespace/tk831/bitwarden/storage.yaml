@@ -1,0 +1,71 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: bitwarden-data-pvc-volsync-restic-config
+  labels:
+    app.kubernetes.io/name: bitwarden
+spec:
+  secretStoreRef:
+    name: vault
+    kind: ClusterSecretStore
+  refreshInterval: 60m
+  target:
+    template:
+      type: kubernetes.io/Opaque
+      data:
+        RESTIC_REPOSITORY: rest:http://data-backup-server.willtaylor.info:8080/volumes/bitwarden-data
+        RESTIC_PASSWORD: "{{ .restic_password }}"
+        RESTIC_REST_USERNAME: "{{ .rclone_username }}"
+        RESTIC_REST_PASSWORD: "{{ .rclone_password }}"
+    deletionPolicy: Delete
+  data:
+  - secretKey: rclone_username
+    remoteRef:
+      key: kv/services/volsync/rclone-credentials
+      property: username
+  - secretKey: rclone_password
+    remoteRef:
+      key: kv/services/volsync/rclone-credentials
+      property: password
+  - secretKey: restic_password
+    remoteRef:
+      key: kv/services/volsync/restic-credentials
+      property: password
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bitwarden-data-pvc
+  labels:
+    app.kubernetes.io/name: bitwarden
+spec:
+  storageClassName: proxmox-zfs
+  volumeName: pvc-54f15a81-c5d4-4af9-8f67-959dd2f9bf4a
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: bitwarden-data-pvc
+  labels:
+    app.kubernetes.io/name: bitwarden
+spec:
+  sourcePVC: bitwarden-data-pvc
+  trigger:
+    # Take a backup every night at 4am
+    schedule: "00 4 * * *"
+  restic:
+    cacheStorageClassName: proxmox-zfs
+    copyMethod: Direct
+    pruneIntervalDays: 7
+    repository: bitwarden-data-pvc-volsync-restic-config
+    retain:
+      hourly: 1
+      daily: 7
+      weekly: 2
+      monthly: 2
+      yearly: 0

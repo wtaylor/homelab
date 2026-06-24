@@ -1,0 +1,68 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: frigate-oidc-client-credentials
+spec:
+  secretStoreRef:
+    name: vault
+    kind: ClusterSecretStore
+  refreshInterval: 5m
+  data:
+  - secretKey: client-secret
+    remoteRef:
+      key: kv/services/frigate/oauth-client-credentials
+      property: client_secret
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: frigate-oidc
+spec:
+  targetRefs:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: frigate-https
+  oidc:
+    provider:
+      issuer: https://auth.w7x6t.dev/oauth2/openid/frigate
+    clientID: frigate
+    clientSecret:
+      name: frigate-oidc-client-credentials
+    redirectURL: "https://frigate.tk831.net/oauth2/callback"
+    logoutPath: "/oauth2/logout"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: frigate-http
+spec:
+  parentRefs:
+  - name: default
+    namespace: kube-system
+    sectionName: http
+  hostnames: [frigate.tk831.net]
+  rules:
+  - filters:
+    - type: RequestRedirect
+      requestRedirect:
+        scheme: https
+        statusCode: 301
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: frigate-https
+spec:
+  parentRefs:
+  - name: default
+    namespace: kube-system
+    sectionName: https
+  hostnames: [frigate.tk831.net]
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: frigate
+      port: 5000

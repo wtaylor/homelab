@@ -1,0 +1,44 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres-tk831-immich
+spec:
+  instances: 1
+  imageName: gitea.tk831.net/ops/postgres-pgvectors:16.4.1-0.4.1
+  managed:
+    roles:
+    - name: immich
+      ensure: present
+      comment: Immich app user
+      superuser: true
+      login: true
+      passwordSecret:
+        name: postgres-tk831-immich-role-immich
+    services:
+      additional:
+      - selectorType: rw
+        serviceTemplate:
+          metadata:
+            name: "postgres-immich-lan-rw"
+          spec:
+            type: LoadBalancer
+            loadBalancerIP: 172.28.3.137
+  primaryUpdateStrategy: unsupervised
+  superuserSecret:
+    name: dbc-postgres-tk831-immich-credentials
+  enableSuperuserAccess: true
+  storage:
+    storageClass: proxmox-zfs
+    size: 20Gi
+    resizeInUseVolumes: false
+  walStorage:
+    storageClass: proxmox-zfs
+    size: 3Gi
+    resizeInUseVolumes: false
+  postgresql:
+    parameters:
+      max_slot_wal_keep_size: "2GB"
+    shared_preload_libraries: ["vchord.so", "vectors.so"]
+  resources:
+    requests:
+      memory: "512Mi"

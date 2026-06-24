@@ -1,0 +1,9 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: joplin
+spec:
+  name: joplin
+  owner: joplin
+  cluster:
+    name: postgres-tk831-default

@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+configMapGenerator:
+- name: nodered-cm
+  files:
+  - files/settings.js
+resources:
+- resources/deployment.yaml
+- resources/storage.yaml
+- resources/service.yaml
+- resources/routes.yaml
+- resources/oauth-client-credentials.yaml

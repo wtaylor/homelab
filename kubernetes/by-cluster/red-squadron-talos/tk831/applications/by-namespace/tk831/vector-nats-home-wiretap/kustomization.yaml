@@ -1,0 +1,32 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: tk831
+helmCharts:
+- name: vector
+  repo: https://helm.vector.dev
+  releaseName: vector-nats-home-wiretap
+  namespace: tk831
+  version: "0.29.0"
+  valuesInline:
+    role: "Aggregator"
+    podAnnotations:
+      autocert.step.sm/name: vector-nats-wiretap.willtaylor.info
+      vector.dev/exclude: "true"
+    replicas: 1
+    persistence:
+      enabled: true
+      storageClassName: proxmox-zfs
+      size: 4Gi
+    envFrom:
+    - secretRef:
+        name: vector-nats-home-wiretap-nats-credentials
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 512Mi
+resources:
+- resources/nats-credentials.yaml
+generators:
+- generators/vector-config-map.yaml

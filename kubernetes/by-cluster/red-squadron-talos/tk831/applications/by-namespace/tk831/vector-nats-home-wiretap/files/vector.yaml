@@ -1,0 +1,41 @@
+data_dir: /vector-data-dir
+api:
+  enabled: true
+  address: 127.0.0.1:8686
+  playground: false
+schema:
+  log_namespace: true
+sources:
+  nats_wiretap:
+    type: nats
+    connection_name: vector-nats-home-wiretap
+    url: nats://nats.tk831.net
+    auth:
+      strategy: user_password
+      user_password:
+        user: "$NATS_USERNAME"
+        password: "$NATS_PASSWORD"
+    subject: ">"
+transforms:
+  nats_event_transform:
+    type: remap
+    inputs: [nats_wiretap]
+    drop_on_abort: true
+    drop_on_error: true
+    source: |-
+      . = {
+        "nats_subject": %nats.subject,
+        "type": "event",
+        "origin": "nats.tk831.net",
+        "collector": "vector-nats-home-wiretap",
+        "timestamp": now(),
+        "message": .
+      }
+sinks:
+  aggregator:
+    type: vector
+    inputs: [nats_event_transform]
+    address: http://vector.tk831.net:6002
+    version: "2"
+    tls:
+      enabled: false

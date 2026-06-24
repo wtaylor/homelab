@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodered
+  labels:
+    app.kubernetes.io/name: nodered
+spec:
+  selector:
+    app.kubernetes.io/name: nodered
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 1880
+  type: ClusterIP

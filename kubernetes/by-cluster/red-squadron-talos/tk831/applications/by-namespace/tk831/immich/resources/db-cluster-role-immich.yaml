@@ -1,0 +1,26 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: postgres-tk831-immich-role-immich
+spec:
+  secretStoreRef:
+    name: vault
+    kind: ClusterSecretStore
+  refreshInterval: 5m
+  data:
+  - secretKey: username
+    remoteRef:
+      key: kv/services/immich/postgres-credentials
+      property: username
+  - secretKey: password
+    remoteRef:
+      key: kv/services/immich/postgres-credentials
+      property: password
+  target:
+    deletionPolicy: Delete
+    template:
+      engineVersion: v2
+      type: kubernetes.io/basic-auth
+      data:
+        username: '{{ .username }}'
+        password: '{{ .password }}'

@@ -1,0 +1,9 @@
+apiVersion: builtin
+kind: ConfigMapGenerator
+behavior: replace
+metadata:
+  name: vector-nats-home-wiretap
+files:
+- files/vector.yaml
+options:
+  disableNameSuffixHash: true
