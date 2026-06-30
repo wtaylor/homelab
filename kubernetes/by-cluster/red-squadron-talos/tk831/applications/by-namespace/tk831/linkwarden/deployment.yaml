@@ -14,21 +14,22 @@ spec:
       labels:
         app.kubernetes.io/name: linkwarden
     spec:
-      volumes:
-      - name: linkwarden-data
-        persistentVolumeClaim:
-          claimName: linkwarden-data-pvc
       containers:
       - name: linkwarden
         image: ghcr.io/linkwarden/linkwarden:v2.14.1
-        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: 1024Mi
+            cpu: 250m
+          limits:
+            memory: 1024Mi
         envFrom:
         - configMapRef:
             name: linkwarden
         - secretRef:
             name: linkwarden-app-secrets
         - secretRef:
-            name: linkwarden-database-credentials
+            name: linkwarden-db-credentials
         - secretRef:
             name: linkwarden-oidc-client-credentials
         - secretRef:
@@ -40,6 +41,3 @@ spec:
         - containerPort: 3012
           name: websocket
           protocol: TCP
-        volumeMounts:
-        - name: linkwarden-data
-          mountPath: /data
