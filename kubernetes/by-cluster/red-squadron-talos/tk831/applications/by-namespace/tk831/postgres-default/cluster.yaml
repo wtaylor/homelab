@@ -57,6 +57,13 @@ spec:
       login: true
       passwordSecret:
         name: postgres-tk831-default-role-joplin
+    - name: linkwarden
+      ensure: present
+      comment: Linkwarden app user
+      superuser: false
+      login: true
+      passwordSecret:
+        name: postgres-tk831-default-role-linkwarden
     services:
       additional:
       - selectorType: rw

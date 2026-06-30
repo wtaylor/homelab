@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkwarden
+  labels:
+    app.kubernetes.io/name: linkwarden
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: linkwarden
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: linkwarden
+    spec:
+      volumes:
+      - name: linkwarden-data
+        persistentVolumeClaim:
+          claimName: linkwarden-data-pvc
+      containers:
+      - name: linkwarden
+        image: ghcr.io/linkwarden/linkwarden:v2.14.1
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: linkwarden
+        - secretRef:
+            name: linkwarden-app-secrets
+        - secretRef:
+            name: linkwarden-database-credentials
+        - secretRef:
+            name: linkwarden-oidc-client-credentials
+        - secretRef:
+            name: linkwarden-s3-credentials
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 3012
+          name: websocket
+          protocol: TCP
+        volumeMounts:
+        - name: linkwarden-data
+          mountPath: /data
