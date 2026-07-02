@@ -1,3 +1,11 @@
+- name: Ensure container host build cache exists
+  become: true
+  ansible.builtin.file:
+    path: /var/lib/forgejo-container-storage
+    state: directory
+    owner: runner
+    group: runner
+    mode: "0755"
 - name: Download forgejo-runner binary
   become: true
   ansible.builtin.get_url:

@@ -23,9 +23,7 @@ uv_venv_auto = true
 [env]
 _.python.venv = { path = ".venv", create = true }
 VAULT_ADDR = "https://vault.tk831.net"
+ANSIBLE_PIPELINING = "True"
 
-[tasks.ansible_playbook]
+[tasks."ansible:playbook"]
 run = 'ansible-playbook -i ansible/common/inventory/ ansible/machines/{{arg(name="machine_playbook")}}'
-
-# [tasks.kanidm]
-# run = './kubernetes/by-cluster/single-spicy/workloads/applications/by-namespace/kanidm/kanidm/etc/kanidm.sh "$@"'

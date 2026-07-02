@@ -88,6 +88,9 @@
       ExecStart=/usr/bin/bao server -config=/mnt/rootn/openbao/config/openbao.hcl
       Restart=on-failure
       RestartSec=5s
+
+      [Install]
+      WantedBy=default.target
 - name: (Re)start openbao service
   become: true
   ansible.builtin.systemd:
