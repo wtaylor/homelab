@@ -1,5 +1,6 @@
 namespace: kube-system
 resources:
-- resources/certificates.yaml
-- resources/envoy-proxy-config.yaml
-- resources/gateway.yaml
+- ./resources/certificates.yaml
+- ./resources/envoy-proxy-config.yaml
+- ./resources/gateway.yaml
+- ./resources/gw-client-traffic-policy.yaml
