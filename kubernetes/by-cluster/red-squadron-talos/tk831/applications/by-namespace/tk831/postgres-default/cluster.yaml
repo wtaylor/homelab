@@ -64,6 +64,20 @@ spec:
       login: true
       passwordSecret:
         name: postgres-tk831-default-role-linkwarden
+    - name: sparkyfitness_admin
+      ensure: present
+      comment: SparkyFitness admin user
+      superuser: false
+      login: true
+      passwordSecret:
+        name: postgres-tk831-default-role-sparkyfitness-admin
+    - name: sparkyfitness_app
+      ensure: present
+      comment: SparkyFitness app user
+      superuser: false
+      login: true
+      passwordSecret:
+        name: postgres-tk831-default-role-sparkyfitness-app
     services:
       additional:
       - selectorType: rw

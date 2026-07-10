@@ -1,0 +1,63 @@
+helmCharts:
+- name: sparkyfitness
+  includeCRDs: false
+  repo: oci://ghcr.io/codewithcj/charts
+  releaseName: sparky-fitness
+  namespace: tk831
+  version: "0.17.3"
+  valuesInline:
+    postgresql:
+      enabled: false
+      backup:
+        enabled: false
+    externalDatabase:
+      host: postgres-tk831-default-rw.tk831.svc.cluster.local
+      port: 5432
+      database: sparkyfitness
+      auth:
+        existingSecret: sparky-fitness-postgres-credentials # keys: username, password
+    server:
+      secrets:
+        existingSecret: sparky-fitness-app-secrets # keys: api_encryption_key, better_auth_secret
+      appDatabase:
+        existingSecret: sparky-fitness-postgres-app-credentials # keys: username, password
+      persistence:
+        uploads:
+          size: 20Gi
+          storageClass: proxmox-zfs
+        backup:
+          size: 10Gi
+          storageClass: local-path-ssd
+    config:
+      disableSignup: false
+      forceEmailLogin: false
+      disableEmailLogin: true
+      oidc:
+        enabled: true
+        providerSlug: kanidm
+        providerName: Kanidm
+        issuerUrl: https://auth.w7x6t.dev/oauth2/openid/sparkyfitness # rd url: https://fitness.tk831.net/api/auth/sso/callback/kanidm
+        secrets:
+          existingSecret: sparky-fitness-oauth-client-credentials # keys: client_id, client_secret
+        adminGroup: sparkyfitness_admins
+        tokenAuthMethod: S256
+      email:
+        enabled: false
+        # host: smtp.example.com
+        # port: 587
+        # from: fitness@example.com
+        # secrets:
+        #   existingSecret: "sparky-fitness-smtp-credentials" # keys: username, password
+    httpRoute:
+      enabled: true
+      hostname: fitness.tk831.net
+      parentRef:
+        name: default
+        namespace: kube-system
+        sectionName: https
+resources:
+- ./resources/database.yaml
+- ./resources/app-secrets.yaml
+- ./resources/client-oauth-credentials.yaml
+- ./resources/postgres-credentials.yaml
+- ./resources/postgres-app-credentials.yaml
