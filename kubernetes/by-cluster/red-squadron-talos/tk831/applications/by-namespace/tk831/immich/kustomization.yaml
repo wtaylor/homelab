@@ -4,14 +4,14 @@ helmCharts:
   repo: https://immich-app.github.io/immich-charts
   releaseName: immich
   namespace: tk831
-  version: "0.10.3"
+  version: "0.13.1"
   valuesInline:
     controllers:
       main:
         containers:
           main:
             image:
-              tag: v2.4.1
+              tag: v3.0.0
     immich:
       metrics:
         # Enabling this will create the service monitors needed to monitor immich with the prometheus operator
