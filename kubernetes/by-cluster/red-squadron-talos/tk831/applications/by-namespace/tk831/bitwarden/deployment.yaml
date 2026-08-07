@@ -20,22 +20,11 @@ spec:
           claimName: bitwarden-data-pvc
       containers:
       - name: bitwarden
-        image: vaultwarden/server:1.36.0
+        image: vaultwarden/server:1.37.1
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
             name: bitwarden
-        env:
-        - name: SSO_CLIENT_ID
-          valueFrom:
-            secretKeyRef:
-              name: bitwarden-oidc-client-credentials
-              key: clientId
-        - name: SSO_CLIENT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: bitwarden-oidc-client-credentials
-              key: clientSecret
         ports:
         - containerPort: 8080
           name: http
