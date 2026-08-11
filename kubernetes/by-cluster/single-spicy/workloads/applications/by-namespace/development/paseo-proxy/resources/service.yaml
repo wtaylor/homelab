@@ -1,0 +1,27 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: paseo-proxy
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: tcp
+    protocol: TCP
+    port: 6767
+    targetPort: 6767
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: paseo-proxy-tcp-1
+  labels:
+    kubernetes.io/service-name: paseo-proxy
+addressType: IPv4
+ports:
+- name: tcp
+  port: 6767
+  protocol: TCP
+endpoints:
+- addresses:
+  - "172.28.1.157"

@@ -56,6 +56,7 @@ helmCharts:
       parentRefs:
       - name: default
         namespace: kube-system
+        sectionName: ssh
       port: 22
     resources:
       limits:

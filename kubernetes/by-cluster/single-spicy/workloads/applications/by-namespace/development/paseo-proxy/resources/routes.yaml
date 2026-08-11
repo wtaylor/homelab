@@ -1,0 +1,51 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: paseo-proxy-http-redirect
+spec:
+  parentRefs:
+  - name: default
+    namespace: kube-system
+    sectionName: http
+  hostnames:
+  - paseo.w7x6t.dev
+  rules:
+  - filters:
+    - type: RequestRedirect
+      requestRedirect:
+        scheme: https
+        statusCode: 301
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: paseo-proxy-https-backend
+spec:
+  parentRefs:
+  - name: default
+    namespace: kube-system
+    sectionName: https
+  hostnames:
+  - paseo.w7x6t.dev
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: paseo-proxy
+      port: 6767
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: paseo-proxy-tcp-backend
+spec:
+  parentRefs:
+  - name: default
+    namespace: kube-system
+    sectionName: paseo
+  rules:
+  - backendRefs:
+    - name: paseo-proxy
+      port: 6767

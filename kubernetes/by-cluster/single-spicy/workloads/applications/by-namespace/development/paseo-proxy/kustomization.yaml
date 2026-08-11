@@ -1,0 +1,4 @@
+namespace: development
+resources:
+- resources/service.yaml
+- resources/routes.yaml

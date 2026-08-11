@@ -36,3 +36,11 @@ spec:
         from: All
       kinds:
       - kind: TCPRoute
+  - name: paseo
+    protocol: TCP
+    port: 6767
+    allowedRoutes:
+      namespaces:
+        from: All
+      kinds:
+      - kind: TCPRoute
