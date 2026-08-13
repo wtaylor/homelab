@@ -20,7 +20,7 @@ spec:
           claimName: bitwarden-data-pvc
       containers:
       - name: bitwarden
-        image: vaultwarden/server:1.37.1
+        image: vaultwarden/server:latest
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
