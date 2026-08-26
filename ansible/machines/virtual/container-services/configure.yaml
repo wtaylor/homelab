@@ -3,7 +3,7 @@
   vars:
     proxy_network: proxy
   roles:
-  - role: ../../common/roles/create-system-users
+  - role: ../../../common/roles/create-system-users
     system_users:
     - username: caddy
       uid: 2000
@@ -17,7 +17,7 @@
       uid: 2004
     - username: versitygw
       uid: 2005
-  - role: ../../common/roles/prepare-disks
+  - role: ../../../common/roles/prepare-disks
     disks:
     - serial: viscsi-caddy-data
       label: caddy-data
@@ -50,16 +50,16 @@
       mountpoint: /var/mnt/versitygw/data
       owner: versitygw
       mode: "0750"
-  - role: ../../common/roles/quadlet-network
+  - role: ../../../common/roles/quadlet-network
     network_name: "{{ proxy_network }}"
   - role: ./roles/quadlet-versitygw
-  - role: ../../common/roles/quadlet-network
+  - role: ../../../common/roles/quadlet-network
     network_name: observability-stack
   - role: ./roles/quadlet-victoria-logs
   - role: ./roles/quadlet-victoria-metrics
   - role: ./roles/quadlet-vector-aggregator
   - role: ./roles/quadlet-grafana
-  - role: ../../common/roles/quadlet-caddy
+  - role: ../../../common/roles/quadlet-caddy
     caddy_data_dir: "/var/mnt/caddy/data"
     cloudflare_token: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/nas-rp-server/cloudflare-credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.api_token }}"
     requires_mounts_for: /var/mnt/caddy/data
@@ -73,7 +73,7 @@
     - domain: databasus.tk831.net
       dest: http://data-backup-server.willtaylor.info:8081
   - role: ./roles/quadlet-pve-exporter
-  - role: ../../common/roles/restic-backup
+  - role: ../../../common/roles/restic-backup
     repository:
       url: rest:http://data-backup-server.willtaylor.info:8080/hosts/container-services/quadlets/versitygw
       password: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/data-backup-server/restic_credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.repoPassword }}"
@@ -90,7 +90,7 @@
     backup_now: false
     directories:
     - /var/mnt/versitygw/data
-  - role: ../../common/roles/restic-backup
+  - role: ../../../common/roles/restic-backup
     repository:
       url: rest:http://data-backup-server.willtaylor.info:8080/hosts/container-services/quadlets/grafana
       password: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/data-backup-server/restic_credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.repoPassword }}"
@@ -107,7 +107,7 @@
     backup_now: false
     directories:
     - /var/mnt/grafana/data
-  - role: ../../common/roles/restic-backup
+  - role: ../../../common/roles/restic-backup
     repository:
       url: rest:http://data-backup-server.willtaylor.info:8080/hosts/container-services/quadlets/victoria-logs
       password: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/data-backup-server/restic_credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.repoPassword }}"
@@ -124,7 +124,7 @@
     backup_now: false
     directories:
     - /var/mnt/victorialogs/data
-  - role: ../../common/roles/restic-backup
+  - role: ../../../common/roles/restic-backup
     repository:
       url: rest:http://data-backup-server.willtaylor.info:8080/hosts/container-services/quadlets/victoria-metrics
       password: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/data-backup-server/restic_credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.repoPassword }}"
@@ -141,7 +141,7 @@
     backup_now: true
     directories:
     - /var/mnt/victoriametrics/data
-  - role: ../../common/roles/restic-backup
+  - role: ../../../common/roles/restic-backup
     repository:
       url: rest:http://data-backup-server.willtaylor.info:8080/hosts/container-services/quadlets/caddy
       password: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/data-backup-server/restic_credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.repoPassword }}"
@@ -158,7 +158,7 @@
     backup_now: false
     directories:
     - /var/mnt/caddy/data
-  - role: ../../common/roles/vector-agent
+  - role: ../../../common/roles/vector-agent
     vector_config:
       data_dir: /opt/vector/data
       api:

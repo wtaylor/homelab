@@ -60,7 +60,7 @@
             - "debian-latest:docker://scm.w7x6t.dev/actions/debian:13"
             - "debian-trixie:docker://scm.w7x6t.dev/actions/debian:13"
             - "alpine-latest:docker://scm.w7x6t.dev/actions/alpine:3.24"
-  - role: ../../common/roles/vector-agent
+  - role: ../../../common/roles/vector-agent
     vector_config:
       data_dir: /opt/vector/data
       api:

@@ -2,7 +2,7 @@
   remote_user: wtaylor
   roles:
   - role: ./configure-ai
-  - role: ../../common/roles/vector-agent
+  - role: ../../../common/roles/vector-agent
     vector_config:
       data_dir: /opt/vector/data
       api:

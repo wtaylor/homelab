@@ -1,11 +1,11 @@
 - hosts: data-backup-server.willtaylor.info
   remote_user: ansible
   roles:
-  - role: ../../common/roles/create-system-groups
+  - role: ../../../common/roles/create-system-groups
     system_groups:
     - name: rclone
       gid: 2500
-  - role: ../../common/roles/create-system-users
+  - role: ../../../common/roles/create-system-users
     system_users:
     - username: rclone-server
       uid: 2000
@@ -13,7 +13,7 @@
     - username: rclone-sync
       uid: 2001
       groups: [rclone]
-  - role: ../../common/roles/prepare-disks
+  - role: ../../../common/roles/prepare-disks
     disks:
     - serial: viscsi-backup-data
       label: backup-data
@@ -26,7 +26,7 @@
   - role: ./roles/configure-rclone-sync
     systemd:
       on_calendar: "*-*-* 03:00:00"
-  - role: ../../common/roles/restic-backup
+  - role: ../../../common/roles/restic-backup
     repository:
       url: rest:http://data-backup-server.willtaylor.info:8080/hosts/data-backup-server/quadlets/databasus
       password: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/data-backup-server/restic_credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.repoPassword }}"
@@ -43,7 +43,7 @@
     backup_now: true
     directories:
     - /var/mnt/backup/data/databasus
-  - role: ../../common/roles/vector-agent
+  - role: ../../../common/roles/vector-agent
     vector_config:
       data_dir: /opt/vector/data
       api:
