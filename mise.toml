@@ -6,7 +6,6 @@ opentofu = "1.11.1"
 python = { version = "3.13.1" }
 terraform = "1.11.4"
 terragrunt = "0.96.1"
-usage = "3.4.0"
 uv = "0.5.11"
 vault = "1.18.3"
 velero = "1.14.0"
@@ -14,6 +13,8 @@ yq = "4.53.3"
 helm = "3.19.4"
 kustomize = "5.8.1"
 bun = "1.2.17"
+fnox = "1.34.0"
+envsubst = "1.4.3"
 
 [settings]
 experimental = true
@@ -24,6 +25,3 @@ uv_venv_auto = true
 [env]
 VAULT_ADDR = "https://vault.tk831.net"
 ANSIBLE_PIPELINING = "True"
-
-[tasks."ansible:playbook"]
-run = 'ansible-playbook -i ansible/common/inventory/ ansible/machines/{{arg(name="machine_playbook")}}'

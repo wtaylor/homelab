@@ -3,10 +3,17 @@ helmCharts:
 - releaseName: external-secrets
   name: external-secrets
   repo: https://charts.external-secrets.io
-  version: "2.1.0"
+  version: "2.9.0"
   namespace: external-secrets
   includeCRDs: true
 resources:
-- resources/cluster-secret-store.yaml
-- resources/service-account.yaml
-- resources/service-account-crb.yaml
+- ./resources/cluster-secret-store.yaml
+- ./resources/css-1password.yaml
+- ./resources/service-account.yaml
+- ./resources/service-account-crb.yaml
+secretGenerator:
+- name: op-homelab-token
+  options:
+    disableNameSuffixHash: true
+  envs:
+  - onepass.secrets.env
