@@ -2,10 +2,14 @@ helmCharts:
 - releaseName: external-secrets
   name: external-secrets
   repo: https://charts.external-secrets.io
-  version: "0.8.5"
+  version: "0.16.2"
   namespace: external-secrets
   includeCRDs: true
+  valuesInline:
+    crds:
+      conversion: false
 resources:
-- resources/cluster-secret-store.yaml
-- resources/service-account.yaml
-- resources/service-account-crb.yaml
+- ./resources/cluster-secret-store.yaml
+- ./resources/service-account.yaml
+- ./resources/service-account-crb.yaml
+# - ./resources/css-op-homelab.yaml

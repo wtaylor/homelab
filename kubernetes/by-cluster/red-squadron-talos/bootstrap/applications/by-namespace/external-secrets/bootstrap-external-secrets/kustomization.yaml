@@ -1,0 +1,9 @@
+namespace: external-secrets
+resources:
+- ./resources/namespace.yaml
+secretGenerator:
+- name: op-homelab-token
+  options:
+    disableNameSuffixHash: true
+  envs:
+  - onepass.secrets.env

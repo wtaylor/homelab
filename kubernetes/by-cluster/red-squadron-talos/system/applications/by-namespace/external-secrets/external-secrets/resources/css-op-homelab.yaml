@@ -1,0 +1,16 @@
+apiVersion: external-secrets.io/v1
+kind: ClusterSecretStore
+metadata:
+  name: op-homelab
+spec:
+  provider:
+    onepasswordSDK:
+      vault: Homelab
+      auth:
+        serviceAccountSecretRef:
+          namespace: external-secrets
+          name: op-homelab-token
+          key: token
+      cache:
+        ttl: 10m
+        maxSize: 200
