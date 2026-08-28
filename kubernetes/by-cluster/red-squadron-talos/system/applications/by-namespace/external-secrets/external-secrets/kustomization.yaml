@@ -5,9 +5,6 @@ helmCharts:
   version: "0.16.2"
   namespace: external-secrets
   includeCRDs: true
-  valuesInline:
-    crds:
-      conversion: false
 resources:
 - ./resources/cluster-secret-store.yaml
 - ./resources/service-account.yaml
