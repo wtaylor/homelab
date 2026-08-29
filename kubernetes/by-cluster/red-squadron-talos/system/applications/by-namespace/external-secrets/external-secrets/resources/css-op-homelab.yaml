@@ -12,5 +12,5 @@ spec:
           name: op-homelab-token
           key: token
       cache:
-        ttl: 10m
-        maxSize: 200
+        ttl: 12h
+        maxSize: 400
