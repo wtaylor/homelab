@@ -4,9 +4,8 @@ terraform {
     env_vars = {
       AWS_REQUEST_CHECKSUM_CALCULATION = "when_required"
       AWS_RESPONSE_CHECKSUM_VALIDATION = "when_required"
-      AWS_ACCESS_KEY_ID = "${run_cmd("--terragrunt-quiet", "../../../scripts/vault_get_secret.sh", "system/device-config/terraform-backend-credentials", "keyID")}"
-      AWS_SECRET_ACCESS_KEY = "${run_cmd("--terragrunt-quiet", "../../../scripts/vault_get_secret.sh", "system/device-config/terraform-backend-credentials", "applicationKey")}"
-      VAULT_ADDR = "https://vault.tk831.net"
+      AWS_ACCESS_KEY_ID = "${get_env("SECRETS_TF_BACKEND_AWS_ACCESS_KEY")}"
+      AWS_SECRET_ACCESS_KEY = "${get_env("SECRETS_TF_BACKEND_AWS_SECRET_KEY")}"
     }
   }
 }

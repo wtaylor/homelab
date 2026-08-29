@@ -5,6 +5,15 @@ type = "1password"
 vault = "Homelab"
 
 [secrets]
+SECRETS_HCLOUD_TOKEN = { provider = "onepass", value = "device-config/hetzner_hcloud_token_apitoken" }
+SECRETS_PVE_RED_SQUADRON_USERNAME = { provider = "onepass", value = "device-config/red_squadron_proxmox_credentials_username" }
+SECRETS_PVE_RED_SQUADRON_PASSWORD = { provider = "onepass", value = "device-config/red_squadron_proxmox_credentials_password" }
+SECRETS_PVE_RED_SQUADRON_SSH_USERNAME = { provider = "onepass", value = "device-config/red_squadron_proxmox_credentials_sshusername" }
+SECRETS_PVE_TARDIS_USERNAME = { provider = "onepass", value = "device-config/tardis_proxmox_credentials_username" }
+SECRETS_PVE_TARDIS_PASSWORD = { provider = "onepass", value = "device-config/tardis_proxmox_credentials_password" }
+SECRETS_PVE_TARDIS_SSH_USERNAME = { provider = "onepass", value = "device-config/tardis_proxmox_credentials_sshusername" }
 SECRETS_K8S_SINGLE_SPICY_ESO_OP_SA = { provider = "onepass", value = "1password-connect-homelab/eso-single-spicy-token" }
 SECRETS_K8S_RED_SQUADRON_ESO_OP_SA = { provider = "onepass", value = "1password-connect-homelab/eso-red-squadron-token" }
 SECRETS_K8S_OP_CONNECT_SERVER_CRED = { provider = "onepass", value = "1password-connect-homelab/1password-credentials.json" }
+SECRETS_TF_BACKEND_AWS_ACCESS_KEY = { provider = "onepass", value = "device-config/terraform_backend_credentials_keyid" }
+SECRETS_TF_BACKEND_AWS_SECRET_KEY = { provider = "onepass", value = "device-config/terraform_backend_credentials_applicationKey" }
