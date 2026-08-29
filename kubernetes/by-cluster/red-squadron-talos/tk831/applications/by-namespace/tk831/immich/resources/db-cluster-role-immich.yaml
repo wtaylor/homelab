@@ -10,10 +10,12 @@ spec:
   data:
   - secretKey: username
     remoteRef:
-      key: immich/postgres/username
+      key: immich
+      property: postgres_username
   - secretKey: password
     remoteRef:
-      key: immich/postgres/password
+      key: immich
+      property: postgres_password
   target:
     deletionPolicy: Delete
     template:

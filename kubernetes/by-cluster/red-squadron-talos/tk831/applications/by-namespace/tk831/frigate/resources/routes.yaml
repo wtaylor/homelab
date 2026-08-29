@@ -10,7 +10,8 @@ spec:
   data:
   - secretKey: client-secret
     remoteRef:
-      key: frigate/oauth-client-credentials/client_secret
+      key: frigate
+      property: oauth_client_credentials_client_secret
 ---
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy

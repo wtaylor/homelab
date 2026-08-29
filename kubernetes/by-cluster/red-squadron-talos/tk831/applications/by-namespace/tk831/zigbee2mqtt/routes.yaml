@@ -1,4 +1,4 @@
-apiVersion: external-secrets.io/v1beta1
+apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: zigbee2mqtt-oidc-client-credentials
@@ -10,7 +10,8 @@ spec:
   data:
   - secretKey: client-secret
     remoteRef:
-      key: zigbee2mqtt/oauth-client-credentials/client_secret
+      key: zigbee2mqtt
+      property: oauth_client_credentials_client_secret
 ---
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy

@@ -19,13 +19,16 @@ spec:
   data:
   - secretKey: rclone_username
     remoteRef:
-      key: volsync/rclone/username
+      key: volsync
+      property: rclone_username
   - secretKey: rclone_password
     remoteRef:
-      key: volsync/rclone/password
+      key: volsync
+      property: rclone_password
   - secretKey: restic_password
     remoteRef:
-      key: volsync/restic/password
+      key: volsync
+      property: restic_password
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
