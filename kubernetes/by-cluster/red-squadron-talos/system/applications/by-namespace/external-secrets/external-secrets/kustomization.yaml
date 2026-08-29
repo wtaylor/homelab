@@ -2,11 +2,11 @@ helmCharts:
 - releaseName: external-secrets
   name: external-secrets
   repo: https://charts.external-secrets.io
-  version: "0.16.2"
+  version: "2.10.0"
   namespace: external-secrets
   includeCRDs: true
 resources:
 - ./resources/cluster-secret-store.yaml
 - ./resources/service-account.yaml
 - ./resources/service-account-crb.yaml
-# - ./resources/css-op-homelab.yaml
+- ./resources/css-op-homelab.yaml
