@@ -4,13 +4,23 @@ metadata:
   name: op-homelab
 spec:
   provider:
-    onepasswordSDK:
-      vault: Homelab
+    onepassword:
+      connectHost: https://op-connect.w7x6t.dev
+      vaults:
+        Homelab: 1
       auth:
-        serviceAccountSecretRef:
-          namespace: external-secrets
-          name: op-homelab-token
-          key: token
-      cache:
-        ttl: 12h
-        maxSize: 400
+        secretRef:
+          connectTokenSecretRef:
+            namespace: external-secrets
+            name: op-homelab-token
+            key: token
+# onepasswordSDK:
+#   vault: Homelab
+#   auth:
+#     serviceAccountSecretRef:
+#       namespace: external-secrets
+#       name: op-homelab-token
+#       key: token
+#   cache:
+#     ttl: 12h
+#     maxSize: 400

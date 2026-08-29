@@ -5,5 +5,6 @@ type = "1password"
 vault = "Homelab"
 
 [secrets]
-SECRETS_K8S_SINGLE_SPICY_ESO_OP_SA = { provider = "onepass", value = "1password-sa-eso-single-spicy/credential" }
-SECRETS_K8S_RED_SQUADRON_ESO_OP_SA = { provider = "onepass", value = "1password-sa-eso-red-squadron/credential" }
+SECRETS_K8S_SINGLE_SPICY_ESO_OP_SA = { provider = "onepass", value = "1password-connect-homelab/eso-single-spicy-token" }
+SECRETS_K8S_RED_SQUADRON_ESO_OP_SA = { provider = "onepass", value = "1password-connect-homelab/eso-red-squadron-token" }
+SECRETS_K8S_OP_CONNECT_SERVER_CRED = { provider = "onepass", value = "1password-connect-homelab/1password-credentials.json" }

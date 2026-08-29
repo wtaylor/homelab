@@ -1,0 +1,16 @@
+namespace: external-secrets
+resources:
+- ./resources/routes.yaml
+helmCharts:
+- releaseName: op-connect
+  name: connect
+  repo: https://1password.github.io/connect-helm-charts
+  version: "2.4.1"
+  namespace: external-secrets
+  skipTests: true
+secretGenerator:
+- name: op-credentials
+  options:
+    disableNameSuffixHash: true
+  envs:
+  - onepass.secrets.env
