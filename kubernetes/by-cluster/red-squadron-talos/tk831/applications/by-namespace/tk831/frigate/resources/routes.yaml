@@ -1,17 +1,16 @@
-apiVersion: external-secrets.io/v1beta1
+apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: frigate-oidc-client-credentials
 spec:
   secretStoreRef:
-    name: vault
     kind: ClusterSecretStore
+    name: op-homelab
   refreshInterval: 5m
   data:
   - secretKey: client-secret
     remoteRef:
-      key: kv/services/frigate/oauth-client-credentials
-      property: client_secret
+      key: frigate/oauth-client-credentials/client_secret
 ---
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy

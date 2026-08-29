@@ -4,14 +4,13 @@ metadata:
   name: zigbee2mqtt-oidc-client-credentials
 spec:
   secretStoreRef:
-    name: vault
     kind: ClusterSecretStore
+    name: op-homelab
   refreshInterval: 5m
   data:
   - secretKey: client-secret
     remoteRef:
-      key: kv/services/zigbee2mqtt/oauth-client-credentials
-      property: client_secret
+      key: zigbee2mqtt/oauth-client-credentials/client_secret
 ---
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy

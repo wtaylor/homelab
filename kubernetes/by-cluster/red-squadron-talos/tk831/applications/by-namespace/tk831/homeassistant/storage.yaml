@@ -4,8 +4,8 @@ metadata:
   name: homeassistant-data-volsync-restic-config
 spec:
   secretStoreRef:
-    name: vault
     kind: ClusterSecretStore
+    name: op-homelab
   refreshInterval: 60m
   target:
     template:
@@ -19,16 +19,13 @@ spec:
   data:
   - secretKey: rclone_username
     remoteRef:
-      key: kv/services/volsync/rclone-credentials
-      property: username
+      key: volsync/rclone/username
   - secretKey: rclone_password
     remoteRef:
-      key: kv/services/volsync/rclone-credentials
-      property: password
+      key: volsync/rclone/password
   - secretKey: restic_password
     remoteRef:
-      key: kv/services/volsync/restic-credentials
-      property: password
+      key: volsync/restic/password
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

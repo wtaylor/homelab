@@ -19,13 +19,13 @@ spec:
   data:
   - secretKey: rclone_username
     remoteRef:
-      key: volsync/rclone-credentials/username
+      key: volsync/rclone/username
   - secretKey: rclone_password
     remoteRef:
-      key: volsync/rclone-credentials/password
+      key: volsync/rclone/password
   - secretKey: restic_password
     remoteRef:
-      key: volsync/restic_password
+      key: volsync/restic/password
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource

@@ -29,17 +29,17 @@ spec:
           valueFrom:
             secretKeyRef:
               name: blungebot-service-credentials
-              key: telegramToken
+              key: telegram_token
         - name: MUMBLE_TG_BOT__MUMBLE__USERNAME
           valueFrom:
             secretKeyRef:
               name: blungebot-service-credentials
-              key: mumbleUsername
+              key: mumble_username
         - name: MUMBLE_TG_BOT__MUMBLE__PASSWORD
           valueFrom:
             secretKeyRef:
               name: blungebot-service-credentials
-              key: mumblePassword
+              key: mumble_password
         volumeMounts:
         - name: config
           mountPath: /var/run/mumble-telegram-bot
