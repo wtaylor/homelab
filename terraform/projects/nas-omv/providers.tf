@@ -5,14 +5,6 @@ terraform {
       source  = "bpg/proxmox"
       version = "0.89.1"
     }
-    time = {
-      source  = "hashicorp/time"
-      version = "0.13.1"
-    }
-    vault = {
-      source  = "hashicorp/vault"
-      version = "5.6.0"
-    }
   }
 }
 

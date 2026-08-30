@@ -21,11 +21,15 @@ terraform {
       source  = "hashicorp/time"
       version = "0.13.1"
     }
-    vault = {
-      source  = "hashicorp/vault"
-      version = "5.6.0"
+    onepassword = {
+      source  = "1Password/onepassword"
+      version = "3.3.1"
     }
   }
+}
+
+provider "onepassword" {
+  account = "NRTCOX6UQZGKPJBH7AUNVSVAUA"
 }
 
 provider "kubernetes" {

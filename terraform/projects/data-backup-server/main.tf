@@ -1,4 +1,5 @@
 locals {
+  vault              = "rywytgveqosp6sijtoepddc6ta"
   root_disk_store    = "local-zfs"
   large_volume_store = "bigmt-vmdata"
   dns_server         = "172.28.0.1"

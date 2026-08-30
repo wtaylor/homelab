@@ -5,9 +5,9 @@ terraform {
       source  = "bpg/proxmox"
       version = "0.89.1"
     }
-    vault = {
-      source  = "hashicorp/vault"
-      version = "5.6.0"
+    onepassword = {
+      source  = "1Password/onepassword"
+      version = "3.3.1"
     }
     hcloud = {
       source  = "hetznercloud/hcloud"
@@ -26,3 +26,6 @@ provider "proxmox" {
   }
 }
 
+provider "onepassword" {
+  account = "NRTCOX6UQZGKPJBH7AUNVSVAUA"
+}

@@ -9,17 +9,17 @@ resource "proxmox_virtual_environment_group" "admins" {
   }
 }
 
-data "vault_kv_secret_v2" "credentials_wtaylor" {
-  mount = "kv"
-  name  = "system/device-config/wtaylor-proxmox-credentials"
+data "onepassword_item" "pve_wtaylor" {
+  vault = local.vault
+  title = "pve-wtaylor-user"
 }
 
 resource "proxmox_virtual_environment_user" "wtaylor" {
   user_id  = "wtaylor@pam"
-  password = data.vault_kv_secret_v2.credentials_wtaylor.data.password
+  password = data.onepassword_item.pve_wtaylor.password
   comment  = "Managed by Terraform"
 
-  email      = data.vault_kv_secret_v2.credentials_wtaylor.data.email
+  email      = data.onepassword_item.pve_wtaylor.section_map["personal"].field_map["email"].value
   first_name = "William"
   last_name  = "Taylor"
 

@@ -2,26 +2,27 @@ data "hcloud_ssh_key" "nebuchadnezzar" {
   name = "wtaylor@nebuchadnezzar"
 }
 
-data "vault_kv_secret_v2" "hetzner_credentials" {
-  mount = "kv"
-  name  = "system/device-config/hetzner-hcloud-token"
+data "onepassword_item" "backup_server" {
+  vault = local.vault
+  title = "hetzner-backup-server"
 }
 
-data "vault_kv_secret_v2" "data_backup_server_ssh" {
-  mount = "kv"
-  name  = "system/device-config/data-backup-server/storage-box-ssh"
+data "onepassword_item" "backup_server_ssh" {
+  vault = local.vault
+  # category = "ssh_key"
+  title = "hetzner-backup-server-ssh-rclone"
 }
 
 resource "hcloud_ssh_key" "data_backup_server" {
   name       = "rclone@data-backup-server"
-  public_key = data.vault_kv_secret_v2.data_backup_server_ssh.data.publicKey
+  public_key = data.onepassword_item.backup_server_ssh.public_key
 }
 
 resource "hcloud_storage_box" "backup_server" {
   name             = "backup-server"
   storage_box_type = "bx21" # 5TB
   location         = "fsn1" # Germany
-  password         = data.vault_kv_secret_v2.hetzner_credentials.data.storageBoxPassword
+  password         = data.onepassword_item.backup_server.password
 
   ssh_keys = [
     hcloud_ssh_key.data_backup_server.public_key,

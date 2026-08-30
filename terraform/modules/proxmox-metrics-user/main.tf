@@ -26,13 +26,26 @@ resource "proxmox_virtual_environment_user_token" "metrics_user_token" {
   user_id               = proxmox_virtual_environment_user.metrics_user.user_id
 }
 
-resource "vault_kv_secret_v2" "credentials_wtaylor" {
-  mount = "kv"
-  name  = var.credentials_secret_name
-  data_json = jsonencode({
-    username = proxmox_virtual_environment_user.metrics_user.user_id
-    password = random_password.password.result
-    tokenId  = proxmox_virtual_environment_user_token.metrics_user_token.id
-    token    = replace(proxmox_virtual_environment_user_token.metrics_user_token.value, "${proxmox_virtual_environment_user_token.metrics_user_token.id}=", "")
-  })
+resource "onepassword_item" "metrics_user_credentials" {
+  vault    = var.vault
+  title    = var.credentials_secret_name
+  category = "login"
+  username = proxmox_virtual_environment_user.metrics_user.user_id
+  password = random_password.password.result
+
+  section_map = {
+    "proxmox_token" = {
+      field_map = {
+        "token_id" = {
+          type  = "CONCEALED"
+          value = proxmox_virtual_environment_user_token.metrics_user_token.id
+        }
+        "token" = {
+          type  = "CONCEALED"
+          value = replace(proxmox_virtual_environment_user_token.metrics_user_token.value, "${proxmox_virtual_environment_user_token.metrics_user_token.id}=", "")
+        }
+      }
+    }
+  }
 }
+

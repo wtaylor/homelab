@@ -1,4 +1,5 @@
 locals {
+  vault         = "rywytgveqosp6sijtoepddc6ta" #Homelab
   talos_version = "v1.13.3"
 
   cluster_vip  = "172.28.2.20"
@@ -122,30 +123,6 @@ resource "talos_cluster_kubeconfig" "single_spicy" {
   node                 = local.talos_nodes["single-spicy"].node_ip
 }
 
-resource "vault_auth_backend" "kubernetes" {
-  type = "kubernetes"
-  path = "kubernetes-single-spicy"
-}
-
-resource "vault_kubernetes_auth_backend_config" "single_spicy" {
-  backend                = vault_auth_backend.kubernetes.path
-  kubernetes_host        = talos_cluster_kubeconfig.single_spicy.kubernetes_client_configuration.host
-  kubernetes_ca_cert     = base64decode(talos_cluster_kubeconfig.single_spicy.kubernetes_client_configuration.ca_certificate)
-  disable_local_ca_jwt   = true
-  disable_iss_validation = true
-  issuer                 = talos_cluster_kubeconfig.single_spicy.kubernetes_client_configuration.host
-}
-
-resource "vault_kubernetes_auth_backend_role" "single_spicy" {
-  backend                          = vault_auth_backend.kubernetes.path
-  role_name                        = "external-secrets-css"
-  bound_service_account_names      = ["eso-vault-css"]
-  bound_service_account_namespaces = ["external-secrets"]
-  token_ttl                        = 3600
-  token_policies                   = ["kubernetes-external-secrets"]
-  alias_name_source                = "serviceaccount_name"
-}
-
 module "proxmox_csi_user" {
   source = "../../modules/proxmox-csi-user"
 
@@ -153,14 +130,23 @@ module "proxmox_csi_user" {
   proxmox_csi_username = "single-spicy-talos-csi"
 }
 
-resource "vault_kv_secret_v2" "csi_credentials" {
-  mount = "kv"
-  name  = "services/single-spicy/csi-proxmox/proxmox-credentials"
-  data_json = jsonencode(
-    {
-      api_token_id = module.proxmox_csi_user.api_token_id
-      api_token    = module.proxmox_csi_user.api_token
-    }
-  )
-}
+resource "onepassword_item" "csi_user" {
+  vault    = local.vault
+  title    = "pve-single-spicy-csi-user"
+  category = "login"
 
+  section_map = {
+    "proxmox_token" = {
+      field_map = {
+        "token_id" = {
+          type  = "CONCEALED"
+          value = module.proxmox_csi_user.api_token_id
+        }
+        "token" = {
+          type  = "CONCEALED"
+          value = module.proxmox_csi_user.api_token
+        }
+      }
+    }
+  }
+}

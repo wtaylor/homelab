@@ -1,4 +1,5 @@
 locals {
+  vault         = "rywytgveqosp6sijtoepddc6ta" #Homelab
   talos_version = "v1.10.1"
 
   cluster_vip  = "172.28.2.10"
@@ -197,38 +198,6 @@ resource "talos_cluster_kubeconfig" "red_squadron_talos" {
   node                 = local.talos_nodes["red-one-talos"].node_ip
 }
 
-resource "vault_auth_backend" "kubernetes" {
-  type = "kubernetes"
-}
-
-resource "vault_kubernetes_auth_backend_config" "red_squadron" {
-  backend                = vault_auth_backend.kubernetes.path
-  kubernetes_host        = talos_cluster_kubeconfig.red_squadron_talos.kubernetes_client_configuration.host
-  kubernetes_ca_cert     = base64decode(talos_cluster_kubeconfig.red_squadron_talos.kubernetes_client_configuration.ca_certificate)
-  disable_local_ca_jwt   = true
-  disable_iss_validation = true
-  issuer                 = talos_cluster_kubeconfig.red_squadron_talos.kubernetes_client_configuration.host
-}
-
-resource "vault_policy" "external_secrets" {
-  name   = "kubernetes-external-secrets"
-  policy = <<EOF
-# Read kv/services
-path "kv/services/*" { capabilities = ["read", "list"] }
-path "kv/data/services/*" { capabilities = ["read", "list"] }
-EOF
-}
-
-resource "vault_kubernetes_auth_backend_role" "red_squadron" {
-  backend                          = vault_auth_backend.kubernetes.path
-  role_name                        = "external-secrets-css"
-  bound_service_account_names      = ["eso-vault-css"]
-  bound_service_account_namespaces = ["external-secrets"]
-  token_ttl                        = 3600
-  token_policies                   = [vault_policy.external_secrets.name]
-  alias_name_source                = "serviceaccount_name"
-}
-
 module "proxmox_csi_user" {
   source = "../../modules/proxmox-csi-user"
 
@@ -236,23 +205,24 @@ module "proxmox_csi_user" {
   proxmox_csi_username = "red-squadron-talos-csi"
 }
 
-resource "vault_kv_secret_v2" "csi_credentials" {
-  mount = "kv"
-  name  = "services/csi-proxmox/proxmox-credentials"
-  data_json = jsonencode(
-    {
-      api_token_id = module.proxmox_csi_user.api_token_id
-      api_token    = module.proxmox_csi_user.api_token
+resource "onepassword_item" "csi_user" {
+  vault    = local.vault
+  title    = "pve-red-squadron-csi-user"
+  category = "login"
+
+  section_map = {
+    "proxmox_token" = {
+      field_map = {
+        "token_id" = {
+          type  = "CONCEALED"
+          value = module.proxmox_csi_user.api_token_id
+        }
+        "token" = {
+          type  = "CONCEALED"
+          value = module.proxmox_csi_user.api_token
+        }
+      }
     }
-  )
+  }
 }
 
-module "argocd-bootstrap" {
-  source         = "../../modules/argocd-bootstrap"
-  bootstrap_mode = "system"
-
-  depends_on = [
-    module.talos_nodes["red-one-talos"],
-    vault_kv_secret_v2.csi_credentials
-  ]
-}
