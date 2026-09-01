@@ -7,9 +7,9 @@
   - role: ../../../common/roles/proxmox-disable-subscription-nag
   - role: ../../../common/roles/update-system
   - role: ../../../common/roles/create-user
-    username: wtaylor
-    password: "{{(lookup('community.hashi_vault.vault_kv2_get', 'system/device-config/wtaylor-proxmox-credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.password }}"
-    salt: "{{(lookup('community.hashi_vault.vault_kv2_get', 'system/device-config/wtaylor-proxmox-credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.salt }}"
+    username: "{{(lookup('community.general.onepassword', 'pve-wtaylor-user', vault='Homelab', field='username'))}}"
+    password: "{{(lookup('community.general.onepassword', 'pve-wtaylor-user', vault='Homelab', field='password'))}}"
+    salt: "{{(lookup('community.general.onepassword', 'pve-wtaylor-user', vault='Homelab', section='security', field='pam_salt'))}}"
   - role: ./roles/proxmox-enable-vfio
   - role: ../../../common/roles/proxmox-notifications
     mailer_name: admin-mail

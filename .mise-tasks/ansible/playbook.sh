@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
-
 #MISE description="Run an ansible playbook"
 
-#USAGE arg "<dir>" help="Path to overlay"
+#USAGE arg "<dir>" help="Path to playbook"
+
+set -euo pipefail
 
 ansible-playbook -i ansible/common/inventory/ "${usage_dir?}"
