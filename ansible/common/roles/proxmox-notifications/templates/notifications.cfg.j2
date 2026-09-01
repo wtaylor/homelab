@@ -6,6 +6,7 @@ smtp: {{ mailer_name }}
 {% endfor %}
         mode {{ mode }} 
         server {{ smtp_server }}
+        port {{ smtp_port }}
         username {{ smtp_username }}
 
 matcher: {{ matcher_name }}
