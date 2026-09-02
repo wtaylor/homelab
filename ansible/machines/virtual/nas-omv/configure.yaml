@@ -6,9 +6,9 @@
     install_restic: true
     repository:
       url: rest:http://data-backup-server.willtaylor.info:8080/hosts/nas-omv/shares
-      password: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/data-backup-server/restic_credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.repoPassword }}"
-      rest_username: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/data-backup-server/restic_credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.username }}"
-      rest_password: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/data-backup-server/restic_credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.password }}"
+      password: "{{(lookup('community.general.onepassword', 'data-backup-server', vault='Homelab', field='restic_credentials_repopassword'))}}"
+      rest_username: "{{(lookup('community.general.onepassword', 'data-backup-server', vault='Homelab', field='restic_credentials_username'))}}"
+      rest_password: "{{(lookup('community.general.onepassword', 'data-backup-server', vault='Homelab', field='restic_credentials_password'))}}"
     retention:
       daily: 7
       weekly: 4

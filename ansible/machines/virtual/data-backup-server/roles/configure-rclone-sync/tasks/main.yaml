@@ -25,7 +25,7 @@
 - name: Create rclone-sync ssh key
   become: true
   ansible.builtin.copy:
-    content: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/device-config/data-backup-server/storage-box-ssh', url=vault_address, engine_mount_point=vault_secret_mount)).secret.privateKey }}"
+    content: "{{(lookup('community.general.onepassword', 'hetzner-backup-server-ssh-rclone', vault='Homelab', field='private key'))}}"
     dest: /var/mnt/backup/data/rclone-sync/config/ssh.key
     owner: root
     group: rclone

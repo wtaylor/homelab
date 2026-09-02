@@ -16,19 +16,19 @@
   containers.podman.podman_secret:
     state: present
     name: restic_repo_password
-    data: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/data-backup-server/restic_credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.repoPassword }}"
+    data: "{{(lookup('community.general.onepassword', 'data-backup-server', vault='Homelab', field='restic_credentials_repopassword'))}}"
 - name: Create restic_username secret
   become: true
   containers.podman.podman_secret:
     state: present
     name: restic_username
-    data: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/data-backup-server/restic_credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.username }}"
+    data: "{{(lookup('community.general.onepassword', 'data-backup-server', vault='Homelab', field='restic_credentials_username'))}}"
 - name: Create restic_password secret
   become: true
   containers.podman.podman_secret:
     state: present
     name: restic_password
-    data: "{{ (lookup('community.hashi_vault.vault_kv2_get', 'system/data-backup-server/restic_credentials', url=vault_address, engine_mount_point=vault_secret_mount)).secret.password }}"
+    data: "{{(lookup('community.general.onepassword', 'data-backup-server', vault='Homelab', field='restic_credentials_password'))}}"
 - name: Create rclone-restic-server quadlet
   become: true
   containers.podman.podman_container:
