@@ -1,11 +1,11 @@
-- hosts: nas-omv.willtaylor.info
+- hosts: nas-omv.lan.tk831.net
   remote_user: wtaylor
   roles:
   - role: ../../../common/roles/sudo-nopasswd
   - role: ../../../common/roles/restic-backup
     install_restic: true
     repository:
-      url: rest:http://data-backup-server.willtaylor.info:8080/hosts/nas-omv/shares
+      url: rest:http://data-backup-server.lan.tk831.net:8080/hosts/nas-omv/shares
       password: "{{(lookup('community.general.onepassword', 'data-backup-server', vault='Homelab', field='restic_credentials_repopassword'))}}"
       rest_username: "{{(lookup('community.general.onepassword', 'data-backup-server', vault='Homelab', field='restic_credentials_username'))}}"
       rest_password: "{{(lookup('community.general.onepassword', 'data-backup-server', vault='Homelab', field='restic_credentials_password'))}}"

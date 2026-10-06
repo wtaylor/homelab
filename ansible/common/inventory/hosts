@@ -1,22 +1,22 @@
-tardis ansible_host=tardis.willtaylor.info
-wireguard-server ansible_host=wireguard.willtaylor.info
-vault-server.willtaylor.info
+tardis ansible_host=tardis.lan.tk831.net
+wireguard-server ansible_host=wireguard.lan.tk831.net
+vault-server.lan.tk831.net
 zigbee-coordinator
-seaweed-server.willtaylor.info
-grafana-server.willtaylor.info
-metrics-server.willtaylor.info
-logs-server.willtaylor.info
-vector-server.willtaylor.info
-nas-rp-server.willtaylor.info
+seaweed-server.lan.tk831.net
+grafana-server.lan.tk831.net
+metrics-server.lan.tk831.net
+logs-server.lan.tk831.net
+vector-server.lan.tk831.net
+nas-rp-server.lan.tk831.net
 external-insight ansible_host=64.227.65.173
 red-one ansible_host=172.28.2.2
-container-services.willtaylor.info
-data-backup-server.willtaylor.info
-rootn.willtaylor.info
-openbao-server.willtaylor.info
-nas-omv.willtaylor.info
-cicd-server.willtaylor.info
-ai-sandbox.willtaylor.info
+container-services.lan.tk831.net
+data-backup-server.lan.tk831.net
+rootn.lan.tk831.net
+openbao-server.lan.tk831.net
+nas-omv.lan.tk831.net
+cicd-server.lan.tk831.net
+ai-sandbox.lan.tk831.net
 
 [all:vars]
 ansible_python_interpreter=auto_silent

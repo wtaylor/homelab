@@ -9,7 +9,7 @@ terraform {
 }
 
 provider "proxmox" {
-  endpoint = "https://tardis.willtaylor.info:8006"
+  endpoint = "https://tardis.lan.tk831.net:8006"
   insecure = true
 
   ssh {
@@ -17,4 +17,3 @@ provider "proxmox" {
     private_key = file("~/.ssh/id_ed25519")
   }
 }
-

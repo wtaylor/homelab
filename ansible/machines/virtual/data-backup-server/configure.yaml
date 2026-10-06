@@ -1,4 +1,4 @@
-- hosts: data-backup-server.willtaylor.info
+- hosts: data-backup-server.lan.tk831.net
   remote_user: ansible
   roles:
   - role: ../../../common/roles/create-system-groups
@@ -28,7 +28,7 @@
       on_calendar: "*-*-* 03:00:00"
   - role: ../../../common/roles/restic-backup
     repository:
-      url: rest:http://data-backup-server.willtaylor.info:8080/hosts/data-backup-server/quadlets/databasus
+      url: rest:http://data-backup-server.lan.tk831.net:8080/hosts/data-backup-server/quadlets/databasus
       password: "{{(lookup('community.general.onepassword', 'data-backup-server', vault='Homelab', field='restic_credentials_repopassword'))}}"
       rest_username: "{{(lookup('community.general.onepassword', 'data-backup-server', vault='Homelab', field='restic_credentials_username'))}}"
       rest_password: "{{(lookup('community.general.onepassword', 'data-backup-server', vault='Homelab', field='restic_credentials_password'))}}"

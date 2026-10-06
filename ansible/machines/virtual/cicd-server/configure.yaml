@@ -1,4 +1,4 @@
-- hosts: cicd-server.willtaylor.info
+- hosts: cicd-server.lan.tk831.net
   remote_user: ansible
   roles:
   - role: ./roles/configure-actions-runner

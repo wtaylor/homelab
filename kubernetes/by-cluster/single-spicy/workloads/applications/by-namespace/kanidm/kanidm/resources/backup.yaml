@@ -11,7 +11,7 @@ spec:
     template:
       type: kubernetes.io/Opaque
       data:
-        RESTIC_REPOSITORY: rest:http://data-backup-server.willtaylor.info:8080/volumes/kanidm-data
+        RESTIC_REPOSITORY: rest:http://data-backup-server.lan.tk831.net:8080/volumes/kanidm-data
         RESTIC_PASSWORD: "{{ .restic_password }}"
         RESTIC_REST_USERNAME: "{{ .rclone_username }}"
         RESTIC_REST_PASSWORD: "{{ .rclone_password }}"

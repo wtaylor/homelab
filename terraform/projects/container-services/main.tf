@@ -16,9 +16,9 @@ resource "proxmox_virtual_environment_file" "ignition" {
     file_name = "container-services.ign"
   }
 
-  lifecycle {
-    replace_triggered_by = [terraform_data.ignition_hash]
-  }
+  # lifecycle {
+  #   replace_triggered_by = [terraform_data.ignition_hash]
+  # }
 }
 
 resource "terraform_data" "ignition_hash" {
@@ -42,13 +42,13 @@ resource "proxmox_virtual_environment_vm" "vm" {
   }
 
   cpu {
-    cores = 6
+    cores = 2
     type  = "x86-64-v2-AES"
   }
 
   memory {
-    dedicated = 16384
-    floating  = 16384
+    dedicated = 4096
+    floating  = 4096
   }
 
   network_device {
