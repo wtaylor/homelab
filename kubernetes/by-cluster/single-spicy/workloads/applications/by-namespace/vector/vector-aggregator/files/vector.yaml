@@ -1,0 +1,40 @@
+# $schema: https://jonohill.github.io/vector-schema/schema.json
+data_dir: /vector-data-dir
+api:
+  enabled: true
+  address: 127.0.0.1:8686
+sources:
+  metrics_generic_prw:
+    type: prometheus_remote_write
+    address: 0.0.0.0:9090
+  syslog:
+    type: syslog
+    address: 0.0.0.0:1468
+    mode: tcp
+  log_generic_json_http:
+    type: http_server
+    address: 0.0.0.0:8081
+    decoding:
+      codec: json
+sinks:
+  vlogs:
+    inputs:
+    - log_generic_json_http
+    type: elasticsearch
+    endpoints:
+    - http://vlsingle-vm-storage-logs.victoria-metrics.svc.cluster.local:9428/insert/elasticsearch/
+    api_version: v8
+    compression: gzip
+    healthcheck:
+      enabled: false
+    query:
+      _msg_field: _msg
+      _time_field: _time
+      _stream_fields: host,service_name,container_name,env,kubernetes.container_name,kubernetes.pod_name,kubernetes.pod_labels.app.kubernetes.io/instance,kubernetes.pod_labels.app.kubernetes.io/name
+  vmetrics:
+    type: prometheus_remote_write
+    inputs:
+    - metrics_generic_prw
+    endpoint: "http://vmsingle-vm-storage-metrics.victoria-metrics.svc.cluster.local:8428/api/v1/write"
+    healthcheck:
+      enabled: false

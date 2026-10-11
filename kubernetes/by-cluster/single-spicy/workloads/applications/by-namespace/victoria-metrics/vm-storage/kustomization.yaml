@@ -1,0 +1,34 @@
+namespace: victoria-metrics
+resources:
+- ./resources/vmsingle.yaml
+- ./resources/vlsingle.yaml
+- ./resources/vtsingle.yaml
+helmCharts:
+- releaseName: loki-vl-proxy
+  namespace: victoria-metrics
+  repo: oci://ghcr.io/reliablyobserve/charts
+  name: loki-vl-proxy
+  version: "2.8.1"
+  skipTests: true
+  valuesInline:
+    extraArgs:
+      backend: http://vlsingle-vm-storage-logs.victoria-metrics.svc.cluster.local:9428
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 400m
+        memory: 256Mi
+    systemMetrics:
+      hostProc:
+        enabled: false
+    networkPolicy:
+      enabled: false
+patches:
+- target:
+    name: loki-vl-proxy
+  patch: |-
+    - op: add
+      path: /metadata/namespace
+      value: victoria-metrics

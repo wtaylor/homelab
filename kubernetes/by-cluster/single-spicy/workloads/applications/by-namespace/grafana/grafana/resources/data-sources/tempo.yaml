@@ -1,0 +1,21 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: tempo
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasource:
+    uid: tempo
+    name: tempo
+    type: tempo
+    access: proxy
+    url: http://vtsingle-vm-storage-traces.victoria-metrics.svc.cluster.local:10428/select/tempo
+    basicAuth: false
+    isDefault: false
+    jsonData:
+      pdcInjected: false
+      streamingEnabled:
+        metrics: false
+        search: false

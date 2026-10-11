@@ -1,0 +1,21 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: prometheus
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasource:
+    uid: prometheus
+    name: prometheus
+    type: prometheus
+    access: proxy
+    url: http://vmsingle-vm-storage-metrics.victoria-metrics.svc.cluster.local:8428
+    basicAuth: false
+    isDefault: false
+    jsonData:
+      httpMethod: POST
+      pdcInjected: false
+      prometheusType: Prometheus
+      prometheusVersion: 2.24.0

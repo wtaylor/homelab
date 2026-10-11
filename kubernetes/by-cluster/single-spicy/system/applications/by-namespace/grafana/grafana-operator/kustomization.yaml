@@ -1,0 +1,10 @@
+helmCharts:
+- releaseName: grafana-operator
+  namespace: grafana
+  repo: oci://ghcr.io/grafana/helm-charts
+  name: grafana-operator
+  version: "5.25.0"
+  valuesInline:
+    namespaceScope: false
+    crds:
+      immutable: false

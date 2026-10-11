@@ -1,0 +1,20 @@
+apiVersion: operator.victoriametrics.com/v1
+kind: VTSingle
+metadata:
+  name: vm-storage-traces
+spec:
+  retentionPeriod: "31d"
+  removePvcAfterDelete: true
+  grpcSpec:
+    listenPort: 4317
+  storage:
+    resources:
+      requests:
+        storage: 50Gi
+  resources:
+    requests:
+      memory: 500Mi
+      cpu: 200m
+    limits:
+      memory: 1Gi
+      cpu: 400m

@@ -1,0 +1,21 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMSingle
+metadata:
+  name: vm-storage-metrics
+spec:
+  retentionPeriod: "31d"
+  removePvcAfterDelete: true
+  selectAllByDefault: false
+  storage:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 50Gi
+  resources:
+    requests:
+      memory: 500Mi
+      cpu: 200m
+    limits:
+      memory: 1Gi
+      cpu: 400m

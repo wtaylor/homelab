@@ -1,0 +1,10 @@
+namespace: grafana
+resources:
+- ./resources/admin-credentials.yaml
+- ./resources/oidc-credentials.yaml
+- ./resources/grafana.yaml
+- ./resources/routes.yaml
+# Datasources
+- ./resources/data-sources/prometheus.yaml
+- ./resources/data-sources/loki.yaml
+- ./resources/data-sources/tempo.yaml

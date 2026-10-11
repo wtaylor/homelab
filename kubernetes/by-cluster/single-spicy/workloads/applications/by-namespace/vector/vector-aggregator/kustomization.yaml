@@ -1,0 +1,51 @@
+configMapGenerator:
+- name: vector-aggregator
+  files:
+  - ./files/vector.yaml
+  namespace: vector
+  options:
+    disableNameSuffixHash: false
+helmCharts:
+- releaseName: vector-aggregator
+  namespace: vector
+  repo: https://helm.vector.dev
+  name: vector
+  version: v0.59.0
+  valuesInline:
+    role: Aggregator
+    podAnnotations:
+      vector.dev/exclude: "true"
+      victoriametrics.com/vlexclude: "true"
+    replicas: 1
+    persistence:
+      enabled: true
+      size: 20Gi
+    resources:
+      requests:
+        cpu: 500m
+        memory: 512Mi
+      limits:
+        memory: 2048Mi
+    dataDir: /vector-data-dir
+    existingConfigMaps: [vector-aggregator]
+    containerPorts:
+    - name: prw
+      containerPort: 9090
+      protocol: TCP
+    - name: syslog
+      containerPort: 1468
+      protocol: TCP
+    - name: glhttp
+      containerPort: 8081
+      protocol: TCP
+    service:
+      ports:
+      - name: prw
+        port: 9090
+        protocol: TCP
+      - name: syslog
+        port: 1468
+        protocol: TCP
+      - name: glhttp
+        port: 8081
+        protocol: TCP

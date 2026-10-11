@@ -1,0 +1,13 @@
+helmCharts:
+- releaseName: vm-operator
+  namespace: victoria-metrics
+  repo: https://victoriametrics.github.io/helm-charts
+  name: victoria-metrics-operator
+  version: 0.68.1
+  valuesInline:
+    nameOverride: 'vm-operator'
+    admissionWebhooks:
+      enabled: true
+      certManager:
+        enabled: true
+    # watchNamespaces: []

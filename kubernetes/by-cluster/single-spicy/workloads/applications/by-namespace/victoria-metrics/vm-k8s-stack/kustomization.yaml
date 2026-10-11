@@ -1,0 +1,66 @@
+helmCharts:
+- releaseName: vm-k8s-stack
+  namespace: victoria-metrics
+  repo: https://victoriametrics.github.io/helm-charts
+  name: victoria-metrics-k8s-stack
+  version: 0.95.2
+  valuesInline:
+    nameOverride: 'vm-k8s-stack'
+    defaultDashboards:
+      enabled: false
+    grafana:
+      enabled: false
+    vmsingle:
+      enabled: false
+    vlsingle:
+      enabled: false
+    vtsingle:
+      enabled: false
+    vmcluster:
+      enabled: false
+    vlcluster:
+      enabled: false
+    vtcluster:
+      enabled: false
+    vmdistributed:
+      enabled: false
+    victoria-metrics-operator:
+      enabled: false
+    external:
+      vm:
+        read:
+          url: http://vmsingle-vm-storage-metrics.victoria-metrics.svc.cluster.local:8428
+          # write:
+          #   url: http://vmsingle-vm-storage-metrics.victoria-metrics.svc.cluster.local:8428
+      vl:
+        read:
+          url: http://vlsingle-vm-storage-logs.victoria-metrics.svc.cluster.local:9428
+          # write:
+          #   url: http://vlsingle-vm-storage-logs.victoria-metrics.svc.cluster.local:9428
+    kube-state-metrics:
+      enabled: true
+    prometheus-node-exporter:
+      enabled: true
+    vmagent:
+      enabled: true
+      spec:
+        remoteWrite:
+        - url: http://vector-aggregator.vector.svc.cluster.local:9090
+    vlagent:
+      enabled: true
+      spec:
+        podMetadata:
+          annotations:
+            victoriametrics.com/vlexclude: "true"
+        k8sCollector:
+          enabled: true
+          includePodLabels: true
+          includePodAnnotations: true
+          includeNodeLabels: true
+          excludeFilter: "kubernetes.pod_annotations.victoriametrics.com/vlagent/exclude:=true"
+        remoteWrite:
+        - url: http://vector-aggregator.vector.svc.cluster.local:8081
+        extraArgs:
+          remoteWrite.format: jsonline
+    alertManager:
+      enabled: true
