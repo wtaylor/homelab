@@ -21,8 +21,8 @@ applicable.
 | part_of | no | yes | homelab | The name of the suite of applications and the common purpose they contribute to |
 | application_name | no | yes | argocd | The name of the group of services providing a complete function |
 | service_name | yes | yes | argocd-repo-server | An identifier for the service, usually corresponds to the name of a binary |
-| log_origin_type | yes | no | journald/kubernetes_pod/dmesg | The service that this log was collected from |
-| log_origin_collector | yes | no | vector/vlagent | The name of the application that collected this log |
+| origin_type | yes | no | journald/kubernetes_pod/dmesg | The service that this log was collected from |
+| origin_collector | yes | no | vector/vlagent | The name of the application that collected this log |
 | host | yes | yes | tardis-vm-100 | The immediate host that the service is running on. Likely a VM |
 | host_physical | no | yes | tardis | The physical host that the host is running on if applicable and discoverable. |
 | instance | no | yes | prod/vm-k8s-stack-single-spicy | An identifier that represents an instance of a specific application. |
@@ -52,8 +52,8 @@ applicable.
 | application_name | pod_annotations."app.w7x6t.dev/application" | pod_labels."app.kubernetes.io/name" |
 | instance | pod_annotations."app.w7x6t.dev/instance" | pod_labels."app.kubernetes.io/instance" |
 | service_name | pod_annotations."app.w7x6t.dev/service" | pod_labels."app.kubernetes.io/name" |
-| log_origin_type | static."kubernetes_logs" | n/a |
-| log_origin_collector | static."vector" | n/a |
+| origin_type | static."kubernetes_logs" | n/a |
+| origin_collector | static."vector" | n/a |
 | host | pod_node_name | n/a |
 | host_physical | node_labels."topology.kubernetes.io/zone" | unset |
 | kubernetes_cluster_name | static."{cluster-name}" | n/a |
