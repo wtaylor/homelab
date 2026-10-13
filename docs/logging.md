@@ -46,23 +46,23 @@ applicable.
 
 ### Mapping
 
-| Label | Derived From |
-| ----- | ------------- |
-| part_of | pod_annotations."app.w7x6t.dev/part-of" |
-| application_name | pod_annotations."app.w7x6t.dev/application" |
-| instance | pod_annotations."app.w7x6t.dev/instance" |
-| service_name | pod_annotations."app.w7x6t.dev/service" |
-| log_origin_type | kubernetes_logs |
-| log_origin_collector | vector |
-| host | pod_node_name |
-| host_physical | node_labels."topology.kubernetes.io/zone" |
-| kubernetes_cluster_name | static |
-| kubernetes_node_hostname | pod_node_name |
-| kubernetes_node_region | node_labels."topology.kubernetes.io/region" |
-| kubernetes_node_zone | node_labels."topology.kubernetes.io/zone" |
-| kubernetes_pod_namespace | pod_namespace |
-| kubernetes_pod_name | pod_name |
-| kubernetes_pod_ip | pod_ip_address |
-| kubernetes_pod_owner | pod_owner |
-| kubernetes_container_image | container_image |
-| kubernetes_container_name | container_name |
+| Label | Derived From | Fallback |
+| ----- | ------------ | -------- |
+| part_of | pod_annotations."app.w7x6t.dev/part-of" | pod_labels."app.kubernetes.io/part-of" |
+| application_name | pod_annotations."app.w7x6t.dev/application" | pod_labels."app.kubernetes.io/name" |
+| instance | pod_annotations."app.w7x6t.dev/instance" | pod_labels."app.kubernetes.io/instance" |
+| service_name | pod_annotations."app.w7x6t.dev/service" | pod_labels."app.kubernetes.io/name" |
+| log_origin_type | static."kubernetes_logs" | n/a |
+| log_origin_collector | static."vector" | n/a |
+| host | pod_node_name | n/a |
+| host_physical | node_labels."topology.kubernetes.io/zone" | unset |
+| kubernetes_cluster_name | static."{cluster-name}" | n/a |
+| kubernetes_node_hostname | pod_node_name | n/a |
+| kubernetes_node_region | node_labels."topology.kubernetes.io/region" | unset |
+| kubernetes_node_zone | node_labels."topology.kubernetes.io/zone" | unset |
+| kubernetes_pod_namespace | pod_namespace | n/a |
+| kubernetes_pod_name | pod_name | n/a |
+| kubernetes_pod_ip | pod_ip_address | unset |
+| kubernetes_pod_owner | pod_owner | unset |
+| kubernetes_container_image | container_image | n/a |
+| kubernetes_container_name | container_name | n/a |
