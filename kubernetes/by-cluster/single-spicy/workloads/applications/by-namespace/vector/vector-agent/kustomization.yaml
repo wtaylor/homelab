@@ -1,0 +1,37 @@
+namespace: vector
+configMapGenerator:
+- name: vector-agent
+  files:
+  - ./files/vector.yaml
+  namespace: vector
+  options:
+    disableNameSuffixHash: false
+helmCharts:
+- releaseName: vector-agent
+  namespace: vector
+  repo: https://helm.vector.dev
+  name: vector
+  version: v0.59.0
+  valuesInline:
+    role: Agent
+    podAnnotations:
+      vector.dev/exclude: "true"
+      victoriametrics.com/vlexclude: "true"
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1024Mi
+      limits:
+        memory: 1024Mi
+    dataDir: /vector-data-dir
+    existingConfigMaps: [vector-agent]
+    containerPorts:
+    - name: metrics
+      containerPort: 9598
+      protocol: TCP
+    service:
+      enabled: false
+      # ports:
+      # - name: glhttp
+      #   port: 9598
+      #   protocol: TCP

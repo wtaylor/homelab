@@ -1,0 +1,148 @@
+# $schema: https://jonohill.github.io/vector-schema/schema.json
+data_dir: /vector-data-dir
+schema:
+  log_namespace: true
+api:
+  enabled: true
+  address: 127.0.0.1:8686
+sources:
+  internal_metrics:
+    type: internal_metrics
+  kubernetes_logs:
+    type: kubernetes_logs
+    # kubernetes_cluster_name
+    # kubernetes_node_hostname
+    # kubernetes_node_region
+    # kubernetes_node_zone
+    # kubernetes_pod_namespace
+    # kubernetes_pod_name
+    # kubernetes_pod_ip
+    # kubernetes_container_image
+    # kubernetes_container_name
+    # physical_host
+    # host
+    # part_of (app.w7x6t.dev/part-of)
+    # application (app.w7x6t.dev/application)
+    # service_name (app.w7x6t.dev/service)
+    # env (app.w7x6t.dev/env)
+    # instance (app.w7x6t.dev/instance)
+transforms:
+  debug_inspect:
+    type: remap
+    inputs: [kubernetes_logs]
+    source: |
+      . = {
+        "event": .,
+        "metadata": %
+      }
+  kubernetes_log_parse:
+    type: remap
+    inputs:
+    - kubernetes_logs
+    source: |-
+      . =
+        parse_json(.) ??
+        parse_common_log(.) ??
+        parse_klog(.) ??
+        parse_glog(.) ??
+        parse_syslog(.) ??
+        { "_msg": . }
+
+      # Promote the first matching alternate message field to ._msg
+      if exists(.message) {
+        ._msg = .message
+        del(.message)
+      } else if exists(.msg) {
+        ._msg = .msg
+        del(.msg)
+      } else if exists(.log) {
+        ._msg = .log
+        del(.log)
+      } else if exists(.text) {
+        ._msg = .text
+        del(.text)
+      } else if exists(.content) {
+        ._msg = .content
+        del(.content)
+      } else if exists(.body) {
+        ._msg = .body
+        del(.body)
+      } else if exists(."@m") {
+        ._msg = ."@m"
+        del(."@m")
+      } else if exists(.RenderedMessage) {
+        ._msg = .RenderedMessage
+        del(.RenderedMessage)
+      } else if exists(.Message) {
+        ._msg = .Message
+        del(.Message)
+      } else if exists(."@mt") {
+        ._msg = ."@mt"
+        del(."@mt")
+      } else if exists(._raw) {
+        ._msg = ._raw
+        del(._raw)
+      } else if exists(.short_message) {
+        ._msg = .short_message
+        del(.short_message)
+      } else if exists(.raw) {
+        ._msg = .raw
+        del(.raw)
+      } else if exists(.line) {
+        ._msg = .line
+        del(.line)
+      } else if exists(.payload) {
+        ._msg = .payload
+        del(.payload)
+      } else if exists(.description) {
+        ._msg = .description
+        del(.description)
+      }
+
+      .kubernetes_cluster_name = "single-spicy"
+      .kubernetes_node_region = %kubernetes_logs.node_labels."topology.kubernetes.io/region"
+      .kubernetes_node_zone = %kubernetes_logs.node_labels."topology.kubernetes.io/zone"
+      .kubernetes_node_hostname = %kubernetes_logs.pod_node_name
+      .kubernetes_pod_namespace = %kubernetes_logs.pod_namespace
+      .kubernetes_pod_name = %kubernetes_logs.pod_name
+      .kubernetes_pod_ip = %kubernetes_logs.pod_ip
+      .kubernetes_container_name = %kubernetes_logs.container_name
+      .kubernetes_container_image = %kubernetes_logs.container_image
+
+      .physical_host = %kubernetes_logs.node_labels."topology.kubernetes.io/zone"
+      .host = %kubernetes_logs.pod_node_name
+
+
+
+      if exists(%kubernetes_logs.pod_labels."app.kubernetes.io/name") {
+        .service_name = %kubernetes_logs.pod_labels."app.kubernetes.io/name"
+        .application = %kubernetes_logs.pod_labels."app.kubernetes.io/name"
+      }
+      if exists(%kubernetes_logs.pod_labels."app.kubernetes.io/instance") {
+        .instance = %kubernetes_logs.pod_labels."app.kubernetes.io/instance"
+      }
+      if exists(%kubernetes_logs.pod_labels."app.kubernetes.io/part-of") {
+        .part_of = %kubernetes_logs.pod_labels."app.kubernetes.io/part-of"
+      }
+      if exists(%kubernetes_logs.pod_labels.env) {
+        .env = %kubernetes_logs.pod_labels.env
+      }
+sinks:
+  metrics_expose:
+    type: prometheus_exporter
+    inputs: [internal_metrics]
+    address: 0.0.0.0:9598
+  # vmlogs:
+  #   inputs:
+  #   - kubernetes_logs
+  #   type: elasticsearch
+  #   endpoints:
+  #   - http://vlsingle-vm-storage-logs.victoria-metrics.svc.cluster.local:9428/insert/elasticsearch/
+  #   api_version: v8
+  #   compression: gzip
+  #   healthcheck:
+  #     enabled: false
+  #   query:
+  #     _msg_field: _msg
+  #     _time_field: _time
+  #     _stream_fields: host,service_name,container_name,env,kubernetes.container_name,kubernetes.pod_name,kubernetes.pod_labels.app.kubernetes.io/instance,kubernetes.pod_labels.app.kubernetes.io/name

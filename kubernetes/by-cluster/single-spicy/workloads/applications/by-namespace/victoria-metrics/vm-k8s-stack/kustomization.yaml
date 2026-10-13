@@ -47,20 +47,20 @@ helmCharts:
         remoteWrite:
         - url: http://vector-aggregator.vector.svc.cluster.local:9090
     vlagent:
-      enabled: true
-      spec:
-        podMetadata:
-          annotations:
-            victoriametrics.com/vlexclude: "true"
-        k8sCollector:
-          enabled: true
-          includePodLabels: true
-          includePodAnnotations: true
-          includeNodeLabels: true
-          excludeFilter: "kubernetes.pod_annotations.victoriametrics.com/vlagent/exclude:=true"
-        remoteWrite:
-        - url: http://vector-aggregator.vector.svc.cluster.local:8081
-        extraArgs:
-          remoteWrite.format: jsonline
+      enabled: false
+      # spec:
+      #   podMetadata:
+      #     annotations:
+      #       victoriametrics.com/vlexclude: "true"
+      #   k8sCollector:
+      #     enabled: true
+      #     includePodLabels: true
+      #     includePodAnnotations: true
+      #     includeNodeLabels: true
+      #     excludeFilter: "kubernetes.pod_annotations.victoriametrics.com/vlagent/exclude:=true"
+      #   remoteWrite:
+      #   - url: http://vector-aggregator.vector.svc.cluster.local:8081
+      #   extraArgs:
+      #     remoteWrite.format: jsonline
     alertManager:
       enabled: true
