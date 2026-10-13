@@ -10,31 +10,7 @@ sources:
     type: internal_metrics
   kubernetes_logs:
     type: kubernetes_logs
-    # kubernetes_cluster_name
-    # kubernetes_node_hostname
-    # kubernetes_node_region
-    # kubernetes_node_zone
-    # kubernetes_pod_namespace
-    # kubernetes_pod_name
-    # kubernetes_pod_ip
-    # kubernetes_container_image
-    # kubernetes_container_name
-    # physical_host
-    # host
-    # part_of (app.w7x6t.dev/part-of)
-    # application (app.w7x6t.dev/application)
-    # service_name (app.w7x6t.dev/service)
-    # env (app.w7x6t.dev/env)
-    # instance (app.w7x6t.dev/instance)
 transforms:
-  debug_inspect:
-    type: remap
-    inputs: [kubernetes_logs]
-    source: |
-      . = {
-        "event": .,
-        "metadata": %
-      }
   kubernetes_log_parse:
     type: remap
     inputs:
@@ -49,6 +25,9 @@ transforms:
         parse_syslog(raw) ??
         { "message": raw }
 
+      # onepassword-connect uses its own 1-5 level scheme; detect it before log_message is removed
+      is_onepassword = exists(parsed.log_message)
+
       msg = raw
       if exists(parsed.message) {
         msg = parsed.message
@@ -56,6 +35,9 @@ transforms:
       } else if exists(parsed.msg) {
         msg = parsed.msg
         del(parsed.msg)
+      } else if exists(parsed.log_message) {
+        msg = parsed.log_message
+        del(parsed.log_message)
       } else if exists(parsed.log) {
         msg = parsed.log
         del(parsed.log)
@@ -100,9 +82,44 @@ transforms:
         del(parsed.description)
       }
 
+      # Level: numbers < 10 are syslog, >= 10 are Bunyan; strings are matched by name.
+      # Unmatched or missing levels stay null and are dropped by compact.
+      lvl =
+        parsed.level ||
+        parsed.severity ||
+        parsed.log_level ||
+        parsed.loglevel ||
+        parsed.lvl ||
+        parsed.levelname ||
+        parsed.SeverityText ||
+        parsed."@l"
+
+      level = if is_onepassword && is_integer(lvl) {
+        if lvl == 1 { "error" } else if lvl == 2 { "warn" } else if lvl == 3 { "info" } else if lvl == 4 { "debug" } else if lvl == 5 { "trace" } else { null }
+      } else if is_integer(lvl) || is_float(lvl) {
+        n = to_int!(lvl)
+        if n < 10 {
+          if n <= 2 { "fatal" } else if n == 3 { "error" } else if n == 4 { "warn" } else if n == 7 { "debug" } else { "info" }
+        } else {
+          if n >= 60 { "fatal" } else if n >= 50 { "error" } else if n >= 40 { "warn" } else if n >= 30 { "info" } else if n >= 20 { "debug" } else { "trace" }
+        }
+      } else if is_string(lvl) {
+        l = downcase(string!(lvl))
+        if includes(["emerg", "emergency", "alert", "crit", "critical", "fatal"], l) { "fatal" }
+        else if includes(["err", "error"], l) { "error" }
+        else if includes(["warn", "warning"], l) { "warn" }
+        else if includes(["info", "information", "notice"], l) { "info" }
+        else if includes(["debug", "verbose"], l) { "debug" }
+        else if l == "trace" { "trace" }
+        else { null }
+      } else {
+        null
+      }
+
       . = {
         "_msg": msg,
         "_time": %kubernetes_logs.timestamp,
+        "level": level,
         "app": parsed
       }
 
@@ -118,7 +135,6 @@ transforms:
       .application_name = pod_annotations."app.w7x6t.dev/application" || pod_labels."app.kubernetes.io/name"
       .service_name = pod_annotations."app.w7x6t.dev/service" || pod_labels."app.kubernetes.io/name"
       .instance = pod_annotations."app.w7x6t.dev/instance" || pod_labels."app.kubernetes.io/instance"
-      .env = pod_annotations."app.w7x6t.dev/env" || pod_labels.env
       .host_physical = node_labels."topology.kubernetes.io/zone"
 
       .kubernetes_cluster_name = "single-spicy"
@@ -139,17 +155,17 @@ sinks:
     type: prometheus_exporter
     inputs: [internal_metrics]
     address: 0.0.0.0:9598
-  # vmlogs:
-  #   inputs:
-  #   - kubernetes_logs
-  #   type: elasticsearch
-  #   endpoints:
-  #   - http://vlsingle-vm-storage-logs.victoria-metrics.svc.cluster.local:9428/insert/elasticsearch/
-  #   api_version: v8
-  #   compression: gzip
-  #   healthcheck:
-  #     enabled: false
-  #   query:
-  #     _msg_field: _msg
-  #     _time_field: _time
-  #     _stream_fields: host,service_name,container_name,env,kubernetes.container_name,kubernetes.pod_name,kubernetes.pod_labels.app.kubernetes.io/instance,kubernetes.pod_labels.app.kubernetes.io/name
+  vmlogs:
+    inputs:
+    - kubernetes_log_parse
+    type: elasticsearch
+    endpoints:
+    - http://vlsingle-vm-storage-logs.victoria-metrics.svc.cluster.local:9428/insert/elasticsearch/
+    api_version: v8
+    compression: gzip
+    healthcheck:
+      enabled: false
+    query:
+      _msg_field: _msg
+      _time_field: _time
+      _stream_fields: "part_of,application_name,service_name,instance,host,host_physical,kubernetes_cluster_name,kubernetes_pod_name,kubernetes_container_name"
