@@ -23,6 +23,7 @@ transforms:
         parse_klog(raw) ??
         parse_glog(raw) ??
         parse_syslog(raw) ??
+        parse_regex(raw, r'^(?P<timestamp>\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) (?P<source>\S+) \[(?P<level>[A-Z])\] (?P<message>.*?)( @ (?P<caller>\S+))?$') ??
         { "message": raw }
 
       # onepassword-connect uses its own 1-5 level scheme; detect it before log_message is removed
@@ -105,12 +106,12 @@ transforms:
         }
       } else if is_string(lvl) {
         l = downcase(string!(lvl))
-        if includes(["emerg", "emergency", "alert", "crit", "critical", "fatal"], l) { "fatal" }
-        else if includes(["err", "error"], l) { "error" }
-        else if includes(["warn", "warning"], l) { "warn" }
-        else if includes(["info", "information", "notice"], l) { "info" }
-        else if includes(["debug", "verbose"], l) { "debug" }
-        else if l == "trace" { "trace" }
+        if includes(["emerg", "emergency", "alert", "crit", "critical", "fatal", "c"], l) { "fatal" }
+        else if includes(["err", "error", "e"], l) { "error" }
+        else if includes(["warn", "warning", "w"], l) { "warn" }
+        else if includes(["info", "information", "notice", "i"], l) { "info" }
+        else if includes(["debug", "verbose", "d"], l) { "debug" }
+        else if includes(["trace", "t"], l) { "trace" }
         else { null }
       } else {
         null
