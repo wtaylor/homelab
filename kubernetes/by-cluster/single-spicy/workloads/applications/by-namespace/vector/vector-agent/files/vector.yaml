@@ -117,6 +117,15 @@ transforms:
         null
       }
 
+      # Fallback for logs whose level couldn't be determined: vector.dev/log-level-default
+      unk_level = %kubernetes_logs.pod_annotations."vector.dev/log-level-default"
+      if !is_string(level) && is_string(unk_level) {
+        unk = downcase!(unk_level)
+        if includes(["trace", "debug", "info", "warn", "error", "fatal"], unk) {
+          level = unk
+        }
+      }
+
       . = {
         "_msg": msg,
         "_time": %kubernetes_logs.timestamp,
@@ -151,6 +160,20 @@ transforms:
 
       # Drop fields whose metadata was missing (null)
       . = compact(., null: true)
+
+      # Numeric ranks for min-level filtering. Stored as metadata (%), so never emitted.
+      ranks = {"trace": 0, "debug": 1, "info": 2, "warn": 3, "error": 4, "fatal": 5}
+      if is_string(level) {
+        %level_num = get(ranks, [level]) ?? null
+      }
+      min_level = %kubernetes_logs.pod_annotations."vector.dev/log-level-min"
+      if is_string(min_level) {
+        %min_level_num = get(ranks, [downcase(string!(min_level))]) ?? null
+      }
+  min_level_filter:
+    type: filter
+    inputs: [kubernetes_log_parse]
+    condition: '!is_integer(%min_level_num) || !is_integer(%level_num) || (%level_num >= %min_level_num) ?? true'
 sinks:
   metrics_expose:
     type: prometheus_exporter
@@ -158,7 +181,7 @@ sinks:
     address: 0.0.0.0:9598
   vmlogs:
     inputs:
-    - kubernetes_log_parse
+    - min_level_filter
     type: elasticsearch
     endpoints:
     - http://vlsingle-vm-storage-logs.victoria-metrics.svc.cluster.local:9428/insert/elasticsearch/
