@@ -1,3 +1,6 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "k8s-cluster-system"
+  app.w7x6t.dev/application: "cert-manager"
 helmCharts:
 - releaseName: cert-manager
   name: cert-manager
@@ -10,6 +13,14 @@ helmCharts:
       enabled: true
     dns01RecursiveNameserversOnly: true
     dns01RecursiveNameservers: '1.1.1.1:53,8.8.8.8:53'
+    podAnnotations:
+      app.w7x6t.dev/service: "cert-manager"
+    webhook:
+      podAnnotations:
+        app.w7x6t.dev/service: "cert-manager-webhook"
+    cainjector:
+      podAnnotations:
+        app.w7x6t.dev/service: "cert-manager-cainjector"
 resources:
 - resources/cloudflare-credentials.yaml
 - resources/cluster-issuer.yaml

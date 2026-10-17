@@ -66,3 +66,13 @@ applicable.
 | kubernetes_pod_owner | pod_owner | unset |
 | kubernetes_container_image | container_image | n/a |
 | kubernetes_container_name | container_name | n/a |
+
+TL;DR: For all PODS apply the following ANNOTATIONS where appropriate:
+
+```yaml
+app.w7x6t.dev/part-of: "project or category"
+app.w7x6t.dev/application: "collection of services"
+app.w7x6t.dev/service: "name of pod or container"
+app.w7x6t.dev/env: "instance divider"
+app.w7x6t.dev/instance: "instance divider"
+```
