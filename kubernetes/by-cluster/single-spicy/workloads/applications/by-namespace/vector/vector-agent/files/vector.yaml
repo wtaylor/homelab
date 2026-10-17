@@ -141,10 +141,11 @@ transforms:
       pod_labels = %kubernetes_logs.pod_labels
       node_labels = %kubernetes_logs.node_labels
 
-      .part_of = pod_annotations."app.w7x6t.dev/part-of" || pod_labels."app.kubernetes.io/part-of"
-      .application_name = pod_annotations."app.w7x6t.dev/application" || pod_labels."app.kubernetes.io/name"
-      .service_name = pod_annotations."app.w7x6t.dev/service" || pod_labels."app.kubernetes.io/name"
-      .instance = pod_annotations."app.w7x6t.dev/instance" || pod_labels."app.kubernetes.io/instance"
+      .part_of = pod_annotations."app.w7x6t.dev/part-of"
+      .application_name = pod_annotations."app.w7x6t.dev/application"
+      .service_name = pod_annotations."app.w7x6t.dev/service"
+      .env = pod_annotations."app.w7x6t.dev/env"
+      .instance = pod_annotations."app.w7x6t.dev/instance"
       .host_physical = node_labels."topology.kubernetes.io/zone"
 
       .kubernetes_cluster_name = "single-spicy"
@@ -157,6 +158,10 @@ transforms:
       .kubernetes_pod_owner = %kubernetes_logs.pod_owner
       .kubernetes_container_image = %kubernetes_logs.container_image
       .kubernetes_container_name = %kubernetes_logs.container_name
+      .kubernetes_pod_app_label_part_of = pod_labels."app.kubernetes.io/part-of"
+      .kubernetes_pod_app_label_name = pod_labels."app.kubernetes.io/name"
+      .kubernetes_pod_app_label_instance = pod_labels."app.kubernetes.io/instance"
+      .kubernetes_pod_app_label_component = pod_labels."app.kubernetes.io/component"
 
       # Drop fields whose metadata was missing (null)
       . = compact(., null: true)
@@ -192,4 +197,4 @@ sinks:
     query:
       _msg_field: _msg
       _time_field: _time
-      _stream_fields: "part_of,application_name,service_name,instance,host,host_physical,kubernetes_cluster_name,kubernetes_pod_name,kubernetes_container_name"
+      _stream_fields: "part_of,application_name,service_name,instance,env,host,host_physical,kubernetes_cluster_name,kubernetes_pod_name,kubernetes_container_name"

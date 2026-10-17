@@ -1,6 +1,9 @@
 namespace: external-secrets
 resources:
 - ./resources/routes.yaml
+commonAnnotations:
+  app.w7x6t.dev/part-of: homelab
+  app.w7x6t.dev/service: op-connect
 helmCharts:
 - releaseName: op-connect
   name: connect
