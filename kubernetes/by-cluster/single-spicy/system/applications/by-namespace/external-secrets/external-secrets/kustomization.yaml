@@ -1,3 +1,6 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "k8s-cluster-system"
+  app.w7x6t.dev/application: "external-secrets"
 namespace: external-secrets
 helmCharts:
 - releaseName: external-secrets
@@ -6,6 +9,15 @@ helmCharts:
   version: "2.9.0"
   namespace: external-secrets
   includeCRDs: true
+  valuesInline:
+    podAnnotations:
+      app.w7x6t.dev/service: "external-secrets"
+    webhook:
+      podAnnotations:
+        app.w7x6t.dev/service: "external-secrets-webhook"
+    certController:
+      podAnnotations:
+        app.w7x6t.dev/service: "external-secrets-cert-controller"
 resources:
 - ./resources/cluster-secret-store.yaml
 - ./resources/css-1password.yaml

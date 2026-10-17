@@ -1,3 +1,6 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "k8s-cluster-system"
+  app.w7x6t.dev/application: "vm-operator"
 helmCharts:
 - releaseName: vm-operator
   namespace: victoria-metrics
@@ -10,4 +13,16 @@ helmCharts:
       enabled: true
       certManager:
         enabled: true
-    # watchNamespaces: []
+        # watchNamespaces: []
+patches:
+- patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: vm-operator
+      namespace: victoria-metrics
+    spec:
+      template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/service: "vm-operator"

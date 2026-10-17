@@ -1,3 +1,6 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "k8s-cluster-system"
+  app.w7x6t.dev/application: "volsync"
 namespace: volsync-system
 resources:
 - https://github.com/kubernetes-csi/external-snapshotter/client/config/crd
@@ -8,3 +11,44 @@ helmCharts:
   repo: https://backube.github.io/helm-charts/
   version: "v0.15.0"
   includeCRDs: true
+  valuesInline:
+    podAnnotations:
+      app.w7x6t.dev/service: "volsync"
+# The helm chart does not set metadata.namespace on its namespaced objects and the
+# top-level namespace transformer does not apply to helm output, so set it explicitly.
+patches:
+- target:
+    kind: ServiceAccount
+    name: volsync
+  patch: |-
+    - op: add
+      path: /metadata/namespace
+      value: volsync-system
+- target:
+    kind: Role
+    name: volsync-leader-election
+  patch: |-
+    - op: add
+      path: /metadata/namespace
+      value: volsync-system
+- target:
+    kind: RoleBinding
+    name: volsync-leader-election
+  patch: |-
+    - op: add
+      path: /metadata/namespace
+      value: volsync-system
+- target:
+    kind: Service
+    name: volsync-metrics
+  patch: |-
+    - op: add
+      path: /metadata/namespace
+      value: volsync-system
+- target:
+    kind: Deployment
+    name: volsync
+  patch: |-
+    - op: add
+      path: /metadata/namespace
+      value: volsync-system

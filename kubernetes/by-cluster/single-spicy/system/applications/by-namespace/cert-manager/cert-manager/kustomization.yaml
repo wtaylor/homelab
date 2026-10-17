@@ -21,6 +21,9 @@ helmCharts:
     cainjector:
       podAnnotations:
         app.w7x6t.dev/service: "cert-manager-cainjector"
+    startupapicheck:
+      podAnnotations:
+        app.w7x6t.dev/service: "cert-manager-startupapicheck"
 resources:
 - resources/cloudflare-credentials.yaml
 - resources/cluster-issuer.yaml

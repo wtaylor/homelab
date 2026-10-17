@@ -1,3 +1,6 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "k8s-cluster-system"
+  app.w7x6t.dev/application: "grafana-operator"
 helmCharts:
 - releaseName: grafana-operator
   namespace: grafana
@@ -8,3 +11,5 @@ helmCharts:
     namespaceScope: false
     crds:
       immutable: false
+    podAnnotations:
+      app.w7x6t.dev/service: "grafana-operator"
