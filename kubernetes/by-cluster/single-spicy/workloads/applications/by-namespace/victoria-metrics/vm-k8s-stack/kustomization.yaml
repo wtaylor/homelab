@@ -1,3 +1,6 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "homelab"
+  app.w7x6t.dev/application: "vm-k8s-stack"
 helmCharts:
 - releaseName: vm-k8s-stack
   namespace: victoria-metrics
@@ -37,13 +40,25 @@ helmCharts:
           url: http://vlsingle-vm-storage-logs.victoria-metrics.svc.cluster.local:9428
           # write:
           #   url: http://vlsingle-vm-storage-logs.victoria-metrics.svc.cluster.local:9428
+    syncJob:
+      podAnnotations:
+        app.w7x6t.dev/service: "vm-k8s-stack-sync-job"
     kube-state-metrics:
       enabled: true
+      podAnnotations:
+        app.w7x6t.dev/service: "kube-state-metrics"
     prometheus-node-exporter:
       enabled: true
+      podAnnotations:
+        app.w7x6t.dev/service: "prometheus-node-exporter"
     vmagent:
       enabled: true
       spec:
+        podMetadata:
+          annotations:
+            app.w7x6t.dev/part-of: "homelab"
+            app.w7x6t.dev/application: "vm-k8s-stack"
+            app.w7x6t.dev/service: "vmagent"
         remoteWrite:
         - url: http://vector-aggregator.vector.svc.cluster.local:9090
     vlagent:
@@ -64,3 +79,25 @@ helmCharts:
       #     remoteWrite.format: jsonline
     alertManager:
       enabled: true
+    alertmanager:
+      spec:
+        podMetadata:
+          annotations:
+            app.w7x6t.dev/part-of: "homelab"
+            app.w7x6t.dev/application: "vm-k8s-stack"
+            app.w7x6t.dev/service: "vmalertmanager"
+    vmalert:
+      spec:
+        podMetadata:
+          annotations:
+            app.w7x6t.dev/part-of: "homelab"
+            app.w7x6t.dev/application: "vm-k8s-stack"
+            app.w7x6t.dev/service: "vmalert"
+    internal:
+      vmauth:
+        spec:
+          podMetadata:
+            annotations:
+              app.w7x6t.dev/part-of: "homelab"
+              app.w7x6t.dev/application: "vm-k8s-stack"
+              app.w7x6t.dev/service: "vm-k8s-stack-vmauth-internal"

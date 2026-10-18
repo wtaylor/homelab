@@ -1,3 +1,6 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "homelab"
+  app.w7x6t.dev/application: "vector-aggregator"
 configMapGenerator:
 - name: vector-aggregator
   files:
@@ -16,6 +19,7 @@ helmCharts:
     podAnnotations:
       vector.dev/exclude: "true"
       victoriametrics.com/vlexclude: "true"
+      app.w7x6t.dev/service: "vector-aggregator"
     replicas: 1
     persistence:
       enabled: true

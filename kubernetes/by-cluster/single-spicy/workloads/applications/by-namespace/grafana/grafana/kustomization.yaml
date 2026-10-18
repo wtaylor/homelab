@@ -1,3 +1,6 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "homelab"
+  app.w7x6t.dev/application: "grafana"
 namespace: grafana
 resources:
 - ./resources/admin-credentials.yaml

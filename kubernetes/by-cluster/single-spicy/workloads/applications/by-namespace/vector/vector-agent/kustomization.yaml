@@ -1,3 +1,6 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "k8s-cluster-system"
+  app.w7x6t.dev/application: "vector-agent"
 namespace: vector
 configMapGenerator:
 - name: vector-agent
@@ -17,6 +20,7 @@ helmCharts:
     podAnnotations:
       vector.dev/exclude: "true"
       victoriametrics.com/vlexclude: "true"
+      app.w7x6t.dev/service: "vector-agent"
     resources:
       requests:
         cpu: 500m

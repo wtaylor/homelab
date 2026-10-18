@@ -39,6 +39,11 @@ spec:
   deployment:
     spec:
       template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/part-of: "homelab"
+            app.w7x6t.dev/application: "grafana"
+            app.w7x6t.dev/service: "grafana"
         spec:
           securityContext:
             runAsUser: 1001

@@ -1,3 +1,6 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "homelab"
+  app.w7x6t.dev/application: "forgejo"
 namespace: development
 resources:
 - ./resources/secret-config.yaml
@@ -87,6 +90,8 @@ helmCharts:
           cpu: 100m
           memory: 128Mi
     gitea:
+      podAnnotations:
+        app.w7x6t.dev/service: "forgejo"
       admin:
         username: gitea_admin
         password: 'insecure_password123$'

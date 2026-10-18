@@ -3,6 +3,11 @@ kind: VTSingle
 metadata:
   name: vm-storage-traces
 spec:
+  podMetadata:
+    annotations:
+      app.w7x6t.dev/part-of: "homelab"
+      app.w7x6t.dev/application: "vm-storage"
+      app.w7x6t.dev/service: "vm-storage-traces"
   retentionPeriod: "31d"
   removePvcAfterDelete: true
   grpcSpec:
