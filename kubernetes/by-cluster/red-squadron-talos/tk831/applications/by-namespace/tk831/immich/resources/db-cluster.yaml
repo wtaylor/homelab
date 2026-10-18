@@ -3,6 +3,11 @@ kind: Cluster
 metadata:
   name: postgres-tk831-immich
 spec:
+  inheritedMetadata:
+    annotations:
+      app.w7x6t.dev/part-of: "homelab"
+      app.w7x6t.dev/application: "immich"
+      app.w7x6t.dev/service: "postgres-tk831-immich"
   instances: 1
   imageName: gitea.tk831.net/ops/postgres-pgvectors:16.4.1-0.4.1
   managed:

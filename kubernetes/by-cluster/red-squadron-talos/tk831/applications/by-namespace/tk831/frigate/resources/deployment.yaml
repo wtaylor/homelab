@@ -17,6 +17,8 @@ spec:
     type: Recreate
   template:
     metadata:
+      annotations:
+        app.w7x6t.dev/service: "frigate"
       labels:
         app.kubernetes.io/instance: tk831-frigate
         app.kubernetes.io/name: frigate

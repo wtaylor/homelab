@@ -1,5 +1,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+commonAnnotations:
+  app.w7x6t.dev/part-of: "k8s-cluster-system"
+  app.w7x6t.dev/application: "argocd"
 namespace: argocd
 resources:
 - github.com/argoproj/argo-cd/manifests/cluster-install?ref=v3.4.3
@@ -18,3 +21,73 @@ patches:
 - path: ./patches/argocd-cmd-params-cm.yaml
 - path: ./patches/argocd-cm.yaml
 - path: ./patches/argocd-rbac-cm.yaml
+- patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-applicationset-controller
+    spec:
+      template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/service: "argocd-applicationset-controller"
+- patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-dex-server
+    spec:
+      template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/service: "argocd-dex-server"
+- patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-notifications-controller
+    spec:
+      template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/service: "argocd-notifications-controller"
+- patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-redis
+    spec:
+      template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/service: "argocd-redis"
+- patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-repo-server
+    spec:
+      template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/service: "argocd-repo-server"
+- patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-server
+    spec:
+      template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/service: "argocd-server"
+- patch: |
+    apiVersion: apps/v1
+    kind: StatefulSet
+    metadata:
+      name: argocd-application-controller
+    spec:
+      template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/service: "argocd-application-controller"

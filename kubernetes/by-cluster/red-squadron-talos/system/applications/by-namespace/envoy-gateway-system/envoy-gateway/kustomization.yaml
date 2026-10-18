@@ -1,3 +1,29 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "k8s-cluster-system"
+  app.w7x6t.dev/application: "envoy-gateway"
 resources:
 - https://github.com/envoyproxy/gateway/releases/download/v1.7.2/install.yaml
 - resources/gatewayclass.yaml
+patches:
+- patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: envoy-gateway
+      namespace: envoy-gateway-system
+    spec:
+      template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/service: "envoy-gateway"
+- patch: |
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: eg-gateway-helm-certgen
+      namespace: envoy-gateway-system
+    spec:
+      template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/service: "envoy-gateway-certgen"

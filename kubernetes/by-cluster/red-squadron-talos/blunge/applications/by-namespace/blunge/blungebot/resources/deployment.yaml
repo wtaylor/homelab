@@ -11,6 +11,8 @@ spec:
       app.kubernetes.io/name: blungebot
   template:
     metadata:
+      annotations:
+        app.w7x6t.dev/service: "blungebot"
       labels:
         app.kubernetes.io/name: blungebot
     spec:

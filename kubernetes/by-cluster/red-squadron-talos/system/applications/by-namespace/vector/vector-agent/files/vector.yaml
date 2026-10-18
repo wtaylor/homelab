@@ -1,58 +1,193 @@
+# $schema: https://jonohill.github.io/vector-schema/schema.json
 data_dir: /vector-data-dir
-api:
-  enabled: false
-  address: 127.0.0.1:8686
-  playground: false
 schema:
   log_namespace: true
+api:
+  enabled: true
+  address: 127.0.0.1:8686
 sources:
+  internal_metrics:
+    type: internal_metrics
   kubernetes_logs:
     type: kubernetes_logs
-  host_metrics:
-    type: host_metrics
-    filesystem:
-      devices:
-        excludes: [binfmt_misc]
-      filesystems:
-        excludes: [binfmt_misc]
-      mountpoints:
-        excludes: ["*/proc/sys/fs/binfmt_misc"]
-  vector_internal_metrics:
-    type: internal_metrics
-    scrape_interval_secs: 60
 transforms:
-  vl_kubernetes_logs:
+  kubernetes_log_parse:
     type: remap
-    inputs: [kubernetes_logs]
+    inputs:
+    - kubernetes_logs
     source: |-
-      .message = .
-      .timestamp = %kubernetes_logs.timestamp
+      raw = string!(.)
+      parsed =
+        parse_json(raw) ??
+        parse_common_log(raw) ??
+        parse_klog(raw) ??
+        parse_glog(raw) ??
+        parse_syslog(raw) ??
+        parse_regex(raw, r'^(?P<timestamp>\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) (?P<source>\S+) \[(?P<level>[A-Z])\] (?P<message>.*?)( @ (?P<caller>\S+))?$') ??
+        { "message": raw }
 
-      if exists(%kubernetes_logs.pod_labels."app.kubernetes.io/name") {
-        .service = %kubernetes_logs.pod_labels."app.kubernetes.io/name"
+      # onepassword-connect uses its own 1-5 level scheme; detect it before log_message is removed
+      is_onepassword = exists(parsed.log_message)
+
+      msg = raw
+      if exists(parsed.message) {
+        msg = parsed.message
+        del(parsed.message)
+      } else if exists(parsed.msg) {
+        msg = parsed.msg
+        del(parsed.msg)
+      } else if exists(parsed.log_message) {
+        msg = parsed.log_message
+        del(parsed.log_message)
+      } else if exists(parsed.log) {
+        msg = parsed.log
+        del(parsed.log)
+      } else if exists(parsed.text) {
+        msg = parsed.text
+        del(parsed.text)
+      } else if exists(parsed.content) {
+        msg = parsed.content
+        del(parsed.content)
+      } else if exists(parsed.body) {
+        msg = parsed.body
+        del(parsed.body)
+      } else if exists(parsed."@m") {
+        msg = parsed."@m"
+        del(parsed."@m")
+      } else if exists(parsed.RenderedMessage) {
+        msg = parsed.RenderedMessage
+        del(parsed.RenderedMessage)
+      } else if exists(parsed.Message) {
+        msg = parsed.Message
+        del(parsed.Message)
+      } else if exists(parsed."@mt") {
+        msg = parsed."@mt"
+        del(parsed."@mt")
+      } else if exists(parsed._raw) {
+        msg = parsed._raw
+        del(parsed._raw)
+      } else if exists(parsed.short_message) {
+        msg = parsed.short_message
+        del(parsed.short_message)
+      } else if exists(parsed.raw) {
+        msg = parsed.raw
+        del(parsed.raw)
+      } else if exists(parsed.line) {
+        msg = parsed.line
+        del(parsed.line)
+      } else if exists(parsed.payload) {
+        msg = parsed.payload
+        del(parsed.payload)
+      } else if exists(parsed.description) {
+        msg = parsed.description
+        del(parsed.description)
       }
-      if exists(%kubernetes_logs.pod_labels."app.kubernetes.io/instance") {
-        .instance = %kubernetes_logs.pod_labels."app.kubernetes.io/instance"
+
+      # Level: numbers < 10 are syslog, >= 10 are Bunyan; strings are matched by name.
+      # Unmatched or missing levels stay null and are dropped by compact.
+      lvl =
+        parsed.level ||
+        parsed.severity ||
+        parsed.log_level ||
+        parsed.loglevel ||
+        parsed.lvl ||
+        parsed.levelname ||
+        parsed.SeverityText ||
+        parsed."@l"
+
+      level = if is_onepassword && is_integer(lvl) {
+        if lvl == 1 { "error" } else if lvl == 2 { "warn" } else if lvl == 3 { "info" } else if lvl == 4 { "debug" } else if lvl == 5 { "trace" } else { null }
+      } else if is_integer(lvl) || is_float(lvl) {
+        n = to_int!(lvl)
+        if n < 10 {
+          if n <= 2 { "fatal" } else if n == 3 { "error" } else if n == 4 { "warn" } else if n == 7 { "debug" } else { "info" }
+        } else {
+          if n >= 60 { "fatal" } else if n >= 50 { "error" } else if n >= 40 { "warn" } else if n >= 30 { "info" } else if n >= 20 { "debug" } else { "trace" }
+        }
+      } else if is_string(lvl) {
+        l = downcase(string!(lvl))
+        if includes(["emerg", "emergency", "alert", "crit", "critical", "fatal", "c"], l) { "fatal" }
+        else if includes(["err", "error", "e"], l) { "error" }
+        else if includes(["warn", "warning", "w"], l) { "warn" }
+        else if includes(["info", "information", "notice", "i"], l) { "info" }
+        else if includes(["debug", "verbose", "d"], l) { "debug" }
+        else if includes(["trace", "t"], l) { "trace" }
+        else { null }
+      } else {
+        null
       }
-      .host = .kubernetes_node = %kubernetes_logs.pod_node_name
-      .kubernetes_cluster = "red-squadron"
-      .kubernetes_namespace = %kubernetes_logs.pod_namespace
+
+      # Fallback for logs whose level couldn't be determined: vector.dev/log-level-default
+      unk_level = %kubernetes_logs.pod_annotations."vector.dev/log-level-default"
+      if !is_string(level) && is_string(unk_level) {
+        unk = downcase!(unk_level)
+        if includes(["trace", "debug", "info", "warn", "error", "fatal"], unk) {
+          level = unk
+        }
+      }
+
+      . = {
+        "_msg": msg,
+        "_time": %kubernetes_logs.timestamp,
+        "level": level,
+        "app": parsed
+      }
+
+      .origin_type = "kubernetes_logs"
+      .origin_collector = "vector"
+      .host = %kubernetes_logs.pod_node_name
+
+      pod_annotations = %kubernetes_logs.pod_annotations
+      pod_labels = %kubernetes_logs.pod_labels
+      node_labels = %kubernetes_logs.node_labels
+
+      .part_of = pod_annotations."app.w7x6t.dev/part-of"
+      .application_name = pod_annotations."app.w7x6t.dev/application"
+      .service_name = pod_annotations."app.w7x6t.dev/service"
+      .env = pod_annotations."app.w7x6t.dev/env"
+      .instance = pod_annotations."app.w7x6t.dev/instance"
+      .host_physical = node_labels."topology.kubernetes.io/zone"
+
+      .kubernetes_cluster_name = "red-squadron-talos"
+      .kubernetes_node_hostname = %kubernetes_logs.pod_node_name
+      .kubernetes_node_region = node_labels."topology.kubernetes.io/region"
+      .kubernetes_node_zone = node_labels."topology.kubernetes.io/zone"
+      .kubernetes_pod_namespace = %kubernetes_logs.pod_namespace
       .kubernetes_pod_name = %kubernetes_logs.pod_name
-      .kubernetes_container_name = %kubernetes_logs.container_name
+      .kubernetes_pod_ip = %kubernetes_logs.pod_ip
+      .kubernetes_pod_owner = %kubernetes_logs.pod_owner
       .kubernetes_container_image = %kubernetes_logs.container_image
+      .kubernetes_container_name = %kubernetes_logs.container_name
+      .kubernetes_pod_app_label_part_of = pod_labels."app.kubernetes.io/part-of"
+      .kubernetes_pod_app_label_name = pod_labels."app.kubernetes.io/name"
+      .kubernetes_pod_app_label_instance = pod_labels."app.kubernetes.io/instance"
+      .kubernetes_pod_app_label_component = pod_labels."app.kubernetes.io/component"
 
-      ._vl.msg_field = "message"
-      ._vl.time_field = "timestamp"
-      ._vl.stream_fields = "host,service,kubernetes_pod_name,kubernetes_container_name"
+      # Drop fields whose metadata was missing (null)
+      . = compact(., null: true)
+
+      # Numeric ranks for min-level filtering. Stored as metadata (%), so never emitted.
+      ranks = {"trace": 0, "debug": 1, "info": 2, "warn": 3, "error": 4, "fatal": 5}
+      if is_string(level) {
+        %level_num = get(ranks, [level]) ?? null
+      }
+      min_level = %kubernetes_logs.pod_annotations."vector.dev/log-level-min"
+      if is_string(min_level) {
+        %min_level_num = get(ranks, [downcase(string!(min_level))]) ?? null
+      }
+  min_level_filter:
+    type: filter
+    inputs: [kubernetes_log_parse]
+    condition: '!is_integer(%min_level_num) || !is_integer(%level_num) || (%level_num >= %min_level_num) ?? true'
 sinks:
-  prom_exporter:
+  metrics_expose:
     type: prometheus_exporter
-    inputs: [host_metrics, vector_internal_metrics]
-    address: 0.0.0.0:9090
-  vector_aggregator:
-    type: vector
-    inputs: ["vl_kubernetes_logs"]
-    address: http://vector.tk831.net:6000
-    version: "2"
-    tls:
-      enabled: false
+    inputs: [internal_metrics]
+    address: 0.0.0.0:9598
+  log_store:
+    type: http
+    inputs:
+    - min_level_filter
+    encoding:
+      codec: native_json
+    uri: https://vector.w7x6t.dev/sink/http_native_json_logs

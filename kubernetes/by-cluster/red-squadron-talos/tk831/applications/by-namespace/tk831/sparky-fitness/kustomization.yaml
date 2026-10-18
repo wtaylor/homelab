@@ -1,3 +1,6 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "homelab"
+  app.w7x6t.dev/application: "sparky-fitness"
 helmCharts:
 - name: sparkyfitness
   includeCRDs: false
@@ -61,3 +64,31 @@ resources:
 - ./resources/client-oauth-credentials.yaml
 - ./resources/postgres-credentials.yaml
 - ./resources/postgres-app-credentials.yaml
+patches:
+- patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: sparkyfitness-server
+    spec:
+      template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/service: "sparkyfitness-server"
+- patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: sparkyfitness-frontend
+    spec:
+      template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/service: "sparkyfitness-frontend"
+- patch: |
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: sparkyfitness-test-connection
+      annotations:
+        app.w7x6t.dev/service: "sparkyfitness-test-connection"

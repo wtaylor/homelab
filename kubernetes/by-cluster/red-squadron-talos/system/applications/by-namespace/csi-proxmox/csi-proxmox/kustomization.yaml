@@ -1,8 +1,22 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "k8s-cluster-system"
+  app.w7x6t.dev/application: "csi-proxmox"
 resources:
 - https://raw.githubusercontent.com/sergelogvinov/proxmox-csi-plugin/v0.17.1/docs/deploy/proxmox-csi-plugin-release.yml
 - resources/cluster-config-secret.yaml
 - resources/storage-class.yaml
 patches:
+- patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: proxmox-csi-plugin-controller
+      namespace: csi-proxmox
+    spec:
+      template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/service: "proxmox-csi-plugin-controller"
 - patch: |
     apiVersion: apps/v1
     kind: DaemonSet
@@ -11,6 +25,9 @@ patches:
       namespace: csi-proxmox
     spec:
       template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/service: "proxmox-csi-plugin-node"
         spec:
           tolerations:
           - effect: NoSchedule

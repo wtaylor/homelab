@@ -1,5 +1,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+commonAnnotations:
+  app.w7x6t.dev/part-of: "k8s-cluster-system"
+  app.w7x6t.dev/application: "cilium"
 helmCharts:
 - name: cilium
   includeCRDs: true
@@ -9,6 +12,8 @@ helmCharts:
   version: "1.17.4"
   valuesInline:
     rollOutCiliumPods: true
+    podAnnotations:
+      app.w7x6t.dev/service: "cilium"
     ipam:
       mode: kubernetes
     kubeProxyReplacement: true
@@ -23,10 +28,16 @@ helmCharts:
     hubble:
       relay:
         enabled: true
+        podAnnotations:
+          app.w7x6t.dev/service: "hubble-relay"
       ui:
         enabled: true
+        podAnnotations:
+          app.w7x6t.dev/service: "hubble-ui"
     operator:
       replicas: 1
+      podAnnotations:
+        app.w7x6t.dev/service: "cilium-operator"
     # Native routing and L2 Announce incompatible, affects all config down to and including loadbalancer:
     # https://github.com/cilium/cilium/issues/27800
     routingMode: tunnel

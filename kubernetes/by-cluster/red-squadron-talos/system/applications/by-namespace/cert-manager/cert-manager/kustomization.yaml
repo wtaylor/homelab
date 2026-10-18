@@ -1,3 +1,6 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "k8s-cluster-system"
+  app.w7x6t.dev/application: "cert-manager"
 helmCharts:
 - releaseName: cert-manager
   name: cert-manager
@@ -8,6 +11,17 @@ helmCharts:
   valuesInline:
     crds:
       enabled: true
+    podAnnotations:
+      app.w7x6t.dev/service: "cert-manager"
+    webhook:
+      podAnnotations:
+        app.w7x6t.dev/service: "cert-manager-webhook"
+    cainjector:
+      podAnnotations:
+        app.w7x6t.dev/service: "cert-manager-cainjector"
+    startupapicheck:
+      podAnnotations:
+        app.w7x6t.dev/service: "cert-manager-startupapicheck"
     dns01RecursiveNameserversOnly: true
     dns01RecursiveNameservers: '1.1.1.1:53,8.8.8.8:53'
 resources:

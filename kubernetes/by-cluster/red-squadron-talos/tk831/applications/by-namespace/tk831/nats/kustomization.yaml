@@ -1,5 +1,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+commonAnnotations:
+  app.w7x6t.dev/part-of: "homelab"
+  app.w7x6t.dev/application: "nats"
 namespace: tk831
 helmCharts:
 - name: nats
@@ -36,3 +39,13 @@ patches:
     name: nats
   path: patches/add-secret-config-to-statefulset.yaml
 - path: patches/convert-service-to-loadbalancer.yaml
+- patch: |
+    apiVersion: apps/v1
+    kind: StatefulSet
+    metadata:
+      name: nats
+    spec:
+      template:
+        metadata:
+          annotations:
+            app.w7x6t.dev/service: "nats"

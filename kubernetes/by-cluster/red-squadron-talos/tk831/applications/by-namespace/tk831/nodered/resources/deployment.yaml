@@ -11,6 +11,8 @@ spec:
       app.kubernetes.io/name: nodered
   template:
     metadata:
+      annotations:
+        app.w7x6t.dev/service: "nodered"
       labels:
         app.kubernetes.io/name: nodered
     spec:

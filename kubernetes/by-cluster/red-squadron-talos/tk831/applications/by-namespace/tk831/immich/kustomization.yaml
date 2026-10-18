@@ -1,3 +1,6 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "homelab"
+  app.w7x6t.dev/application: "immich"
 helmCharts:
 - name: immich
   includeCRDs: false
@@ -35,14 +38,29 @@ helmCharts:
     # Dependencies
     valkey:
       enabled: true
+      controllers:
+        main:
+          pod:
+            annotations:
+              app.w7x6t.dev/service: "immich-valkey"
     # Immich components
     server:
       enabled: true
+      controllers:
+        main:
+          pod:
+            annotations:
+              app.w7x6t.dev/service: "immich-server"
       ingress:
         main:
           enabled: false
     machine-learning:
       enabled: true
+      controllers:
+        main:
+          pod:
+            annotations:
+              app.w7x6t.dev/service: "immich-machine-learning"
       persistence:
         cache:
           enabled: true

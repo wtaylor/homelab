@@ -1,23 +1,41 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-helmCharts:
-- name: vector
-  repo: https://helm.vector.dev
-  releaseName: vector-agent
+commonAnnotations:
+  app.w7x6t.dev/part-of: "k8s-cluster-system"
+  app.w7x6t.dev/application: "vector-agent"
+namespace: vector
+configMapGenerator:
+- name: vector-agent
+  files:
+  - ./files/vector.yaml
   namespace: vector
-  version: "0.50.0"
+  options:
+    disableNameSuffixHash: false
+helmCharts:
+- releaseName: vector-agent
+  namespace: vector
+  repo: https://helm.vector.dev
+  name: vector
+  version: v0.59.0
   valuesInline:
     role: Agent
     podAnnotations:
       vector.dev/exclude: "true"
-    tolerations:
-    - key: node-role.kubernetes.io/control-plane
-      operator: Exists
+      victoriametrics.com/vlexclude: "true"
+      app.w7x6t.dev/service: "vector-agent"
     resources:
       requests:
-        cpu: 400m
-        memory: 2048Mi
+        cpu: 500m
+        memory: 1024Mi
       limits:
-        memory: 2048Mi
-generators:
-- generators/vector-yaml-config-map.yaml
+        memory: 1024Mi
+    dataDir: /vector-data-dir
+    existingConfigMaps: [vector-agent]
+    containerPorts:
+    - name: metrics
+      containerPort: 9598
+      protocol: TCP
+    service:
+      enabled: false
+      # ports:
+      # - name: glhttp
+      #   port: 9598
+      #   protocol: TCP
