@@ -11,6 +11,8 @@ helmCharts:
     nameOverride: 'vm-k8s-stack'
     defaultDashboards:
       enabled: false
+    defaultRules:
+      enabled: false
     grafana:
       enabled: false
     vmsingle:
@@ -63,36 +65,10 @@ helmCharts:
         - url: http://vector-aggregator.vector.svc.cluster.local:9090
     vlagent:
       enabled: false
-      # spec:
-      #   podMetadata:
-      #     annotations:
-      #       victoriametrics.com/vlexclude: "true"
-      #   k8sCollector:
-      #     enabled: true
-      #     includePodLabels: true
-      #     includePodAnnotations: true
-      #     includeNodeLabels: true
-      #     excludeFilter: "kubernetes.pod_annotations.victoriametrics.com/vlagent/exclude:=true"
-      #   remoteWrite:
-      #   - url: http://vector-aggregator.vector.svc.cluster.local:8081
-      #   extraArgs:
-      #     remoteWrite.format: jsonline
-    alertManager:
-      enabled: true
     alertmanager:
-      spec:
-        podMetadata:
-          annotations:
-            app.w7x6t.dev/part-of: "homelab"
-            app.w7x6t.dev/application: "vm-k8s-stack"
-            app.w7x6t.dev/service: "vmalertmanager"
+      enabled: false
     vmalert:
-      spec:
-        podMetadata:
-          annotations:
-            app.w7x6t.dev/part-of: "homelab"
-            app.w7x6t.dev/application: "vm-k8s-stack"
-            app.w7x6t.dev/service: "vmalert"
+      enabled: false
     internal:
       vmauth:
         spec:
