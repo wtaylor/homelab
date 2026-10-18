@@ -1,6 +1,9 @@
 commonAnnotations:
   app.w7x6t.dev/part-of: "homelab"
   app.w7x6t.dev/application: "vector-aggregator"
+namespace: vector
+resources:
+- resources/routes.yaml
 configMapGenerator:
 - name: vector-aggregator
   files:
@@ -42,6 +45,9 @@ helmCharts:
     - name: glhttp
       containerPort: 8081
       protocol: TCP
+    - name: httpmetrics
+      containerPort: 8082
+      protocol: TCP
     service:
       ports:
       - name: prw
@@ -52,4 +58,7 @@ helmCharts:
         protocol: TCP
       - name: glhttp
         port: 8081
+        protocol: TCP
+      - name: httpmetrics
+        port: 8082
         protocol: TCP

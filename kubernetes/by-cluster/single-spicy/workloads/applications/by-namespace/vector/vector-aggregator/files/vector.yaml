@@ -4,22 +4,27 @@ api:
   enabled: true
   address: 127.0.0.1:8686
 sources:
-  metrics_generic_prw:
+  prw_generic:
     type: prometheus_remote_write
     address: 0.0.0.0:9090
   syslog:
     type: syslog
     address: 0.0.0.0:1468
     mode: tcp
-  log_generic_json_http:
+  http_native_json_logs:
     type: http_server
     address: 0.0.0.0:8081
     decoding:
-      codec: json
+      codec: native_json
+  http_native_json_metrics:
+    type: http_server
+    address: 0.0.0.0:8082
+    decoding:
+      codec: native_json
 sinks:
   vlogs:
     inputs:
-    - log_generic_json_http
+    - http_native_json_logs
     type: elasticsearch
     endpoints:
     - http://vlsingle-vm-storage-logs.victoria-metrics.svc.cluster.local:9428/insert/elasticsearch/
@@ -30,11 +35,11 @@ sinks:
     query:
       _msg_field: _msg
       _time_field: _time
-      _stream_fields: host,service_name,container_name,env,kubernetes.container_name,kubernetes.pod_name,kubernetes.pod_labels.app.kubernetes.io/instance,kubernetes.pod_labels.app.kubernetes.io/name
+      _stream_fields: "part_of,application_name,service_name,instance,env,host,host_physical,kubernetes_cluster_name,kubernetes_pod_name,kubernetes_container_name"
   vmetrics:
     type: prometheus_remote_write
     inputs:
-    - metrics_generic_prw
+    - prw_generic
     endpoint: "http://vmsingle-vm-storage-metrics.victoria-metrics.svc.cluster.local:8428/api/v1/write"
     healthcheck:
       enabled: false
