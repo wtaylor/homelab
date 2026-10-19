@@ -18,7 +18,6 @@ helmCharts:
       podAnnotations:
         app.w7x6t.dev/service: "external-secrets-cert-controller"
 resources:
-- ./resources/cluster-secret-store.yaml
 - ./resources/service-account.yaml
 - ./resources/service-account-crb.yaml
 - ./resources/css-op-homelab.yaml

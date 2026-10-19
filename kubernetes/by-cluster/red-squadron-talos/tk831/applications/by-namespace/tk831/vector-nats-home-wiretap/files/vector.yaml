@@ -9,7 +9,7 @@ sources:
   nats_wiretap:
     type: nats
     connection_name: vector-nats-home-wiretap
-    url: nats://nats.tk831.net
+    url: nats://nats.tk831.svc.cluster.local
     auth:
       strategy: user_password
       user_password:
