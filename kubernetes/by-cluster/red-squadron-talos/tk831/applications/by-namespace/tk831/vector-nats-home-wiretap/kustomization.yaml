@@ -1,26 +1,35 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
 commonAnnotations:
   app.w7x6t.dev/part-of: "homelab"
   app.w7x6t.dev/application: "vector-nats-home-wiretap"
 namespace: tk831
+resources:
+- resources/nats-credentials.yaml
+configMapGenerator:
+- name: vector-nats-home-wiretap
+  files:
+  - ./files/vector.yaml
+  namespace: vector
+  options:
+    disableNameSuffixHash: false
 helmCharts:
-- name: vector
-  repo: https://helm.vector.dev
-  releaseName: vector-nats-home-wiretap
+- releaseName: vector-nats-home-wiretap
   namespace: tk831
-  version: "0.29.0"
+  repo: https://helm.vector.dev
+  name: vector
+  version: v0.59.0
   valuesInline:
-    role: "Aggregator"
+    role: Aggregator
     podAnnotations:
-      autocert.step.sm/name: vector-nats-wiretap.willtaylor.info
       vector.dev/exclude: "true"
+      victoriametrics.com/vlexclude: "true"
       app.w7x6t.dev/service: "vector-nats-home-wiretap"
     replicas: 1
     persistence:
       enabled: true
-      storageClassName: proxmox-zfs
       size: 4Gi
+    env:
+    - name: VECTOR_DANGEROUSLY_ALLOW_ENV_VAR_INTERPOLATION
+      value: "true"
     envFrom:
     - secretRef:
         name: vector-nats-home-wiretap-nats-credentials
@@ -29,8 +38,15 @@ helmCharts:
         cpu: 100m
         memory: 256Mi
       limits:
-        memory: 512Mi
-resources:
-- resources/nats-credentials.yaml
-generators:
-- generators/vector-config-map.yaml
+        memory: 256Mi
+    dataDir: /vector-data-dir
+    existingConfigMaps: [vector-nats-home-wiretap]
+    containerPorts:
+    - name: metrics
+      containerPort: 9598
+      protocol: TCP
+    service:
+      ports:
+      - name: prw
+        port: 9598
+        protocol: TCP

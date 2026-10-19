@@ -2,10 +2,11 @@ data_dir: /vector-data-dir
 api:
   enabled: true
   address: 127.0.0.1:8686
-  playground: false
 schema:
   log_namespace: true
 sources:
+  internal_metrics:
+    type: internal_metrics
   nats_wiretap:
     type: nats
     connection_name: vector-nats-home-wiretap
@@ -24,18 +25,21 @@ transforms:
     drop_on_error: true
     source: |-
       . = {
+        "application_name": "vector-nats-home-wiretap",
+        "service_name": "vector-nats-home-wiretap",
         "nats_subject": %nats.subject,
-        "type": "event",
-        "origin": "nats.tk831.net",
-        "collector": "vector-nats-home-wiretap",
-        "timestamp": now(),
-        "message": .
+        "_time": now(),
+        "_msg": .
       }
 sinks:
-  aggregator:
-    type: vector
-    inputs: [nats_event_transform]
-    address: http://vector.tk831.net:6002
-    version: "2"
-    tls:
-      enabled: false
+  metrics_expose:
+    type: prometheus_exporter
+    inputs: [internal_metrics]
+    address: 0.0.0.0:9598
+  log_store:
+    type: http
+    inputs:
+    - nats_event_transform
+    encoding:
+      codec: native_json
+    uri: https://vector.w7x6t.dev/sink/http_native_json_logs
