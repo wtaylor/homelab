@@ -13,19 +13,21 @@ Best endeavours are taken to ingest all these logs and categorise them efficient
 ### Base Field Set
 
 All logs should be structured where possible prior to ingestion. The following
-is the set of labels that should be attached to all workloads at a minimum where
-applicable.
+is the set of fields that should be attached to all workloads at a minimum. The
+`part_of`, `application_name` and `service_name` fields are derived from pod
+annotations (see [Mapping](#mapping)) and are required for every workload.
 
 | Label | Required | Is Stream Field? | Example | Meaning |
 | ----- | -------- | ---------------- | ------- | -------- |
-| part_of | no | yes | homelab | The name of the suite of applications and the common purpose they contribute to |
-| application_name | no | yes | argocd | The name of the group of services providing a complete function |
-| service_name | yes | yes | argocd-repo-server | An identifier for the service, usually corresponds to the name of a binary |
+| part_of | yes | yes | homelab | The name of the suite of applications and the common purpose they contribute to |
+| application_name | yes | yes | argocd | The name of the group of services providing a complete function |
+| service_name | yes | yes | argocd-repo-server | An identifier for the service, usually the name of the workload (Deployment, StatefulSet, DaemonSet) that produced the log, or the binary name where they differ |
 | origin_type | yes | no | journald/kubernetes_pod/dmesg | The service that this log was collected from |
 | origin_collector | yes | no | vector/vlagent | The name of the application that collected this log |
 | host | yes | yes | tardis-vm-100 | The immediate host that the service is running on. Likely a VM |
 | host_physical | no | yes | tardis | The physical host that the host is running on if applicable and discoverable. |
-| instance | no | yes | prod/vm-k8s-stack-single-spicy | An identifier that represents an instance of a specific application. |
+| env | no | yes | prod | Not set by convention. Never add it to a workload. |
+| instance | no | yes | prod/vm-k8s-stack-single-spicy | Not set by convention. Never add it to a workload. |
 
 ## Kubernetes
 
@@ -43,15 +45,20 @@ applicable.
 | kubernetes_pod_owner | no | yes | ReplicaSet/123 | A shortform ownership reference to the resource that owns the pod |
 | kubernetes_container_image | yes | no | ghcr.io/argo/argocd-repo-server:latest | The image of the running container that produced the log |
 | kubernetes_container_name | yes | yes | repo-server | The name of the container that produced the log |
+| kubernetes_pod_app_label_part_of | no | no | homelab | The pod's `app.kubernetes.io/part-of` label, kept for reference |
+| kubernetes_pod_app_label_name | no | no | argocd-repo-server | The pod's `app.kubernetes.io/name` label, kept for reference |
+| kubernetes_pod_app_label_instance | no | no | argocd | The pod's `app.kubernetes.io/instance` label, kept for reference |
+| kubernetes_pod_app_label_component | no | no | repo-server | The pod's `app.kubernetes.io/component` label, kept for reference |
 
 ### Mapping
 
 | Label | Derived From | Fallback |
 | ----- | ------------ | -------- |
-| part_of | pod_annotations."app.w7x6t.dev/part-of" | pod_labels."app.kubernetes.io/part-of" |
-| application_name | pod_annotations."app.w7x6t.dev/application" | pod_labels."app.kubernetes.io/name" |
-| instance | pod_annotations."app.w7x6t.dev/instance" | pod_labels."app.kubernetes.io/instance" |
-| service_name | pod_annotations."app.w7x6t.dev/service" | pod_labels."app.kubernetes.io/name" |
+| part_of | pod_annotations."app.w7x6t.dev/part-of" | unset |
+| application_name | pod_annotations."app.w7x6t.dev/application" | unset |
+| service_name | pod_annotations."app.w7x6t.dev/service" | unset |
+| env | pod_annotations."app.w7x6t.dev/env" | unset |
+| instance | pod_annotations."app.w7x6t.dev/instance" | unset |
 | origin_type | static."kubernetes_logs" | n/a |
 | origin_collector | static."vector" | n/a |
 | host | pod_node_name | n/a |
@@ -66,13 +73,29 @@ applicable.
 | kubernetes_pod_owner | pod_owner | unset |
 | kubernetes_container_image | container_image | n/a |
 | kubernetes_container_name | container_name | n/a |
+| kubernetes_pod_app_label_part_of | pod_labels."app.kubernetes.io/part-of" | unset |
+| kubernetes_pod_app_label_name | pod_labels."app.kubernetes.io/name" | unset |
+| kubernetes_pod_app_label_instance | pod_labels."app.kubernetes.io/instance" | unset |
+| kubernetes_pod_app_label_component | pod_labels."app.kubernetes.io/component" | unset |
 
-TL;DR: For all PODS apply the following ANNOTATIONS where appropriate:
+## Annotating Workloads
+
+Every workload should carry the following annotations:
 
 ```yaml
-app.w7x6t.dev/part-of: "project or category"
-app.w7x6t.dev/application: "collection of services"
-app.w7x6t.dev/service: "name of pod or container"
-app.w7x6t.dev/env: "instance divider"
-app.w7x6t.dev/instance: "instance divider"
+app.w7x6t.dev/part-of: "homelab" # or "k8s-cluster-system"
+app.w7x6t.dev/application: "<project directory name>"
+app.w7x6t.dev/service: "<workload name>"
 ```
+
+Rules:
+
+- `part-of`: `k8s-cluster-system` for everything under `system/`, and for the
+  single-spicy vector agent. `homelab` for other workloads.
+- `application`: the name of the kustomize project directory, unless the
+  directory name is shorthand for something else.
+- `service`: the name of the workload. If a project has only one resource that
+  creates pods, `service` and `application` are identical.
+
+Known gap: volsync mover pods cannot be annotated, because `ReplicationSource`
+only exposes `moverPodLabels`.
