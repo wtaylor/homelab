@@ -7,7 +7,7 @@ helmCharts:
   repo: oci://ghcr.io/codewithcj/charts
   releaseName: sparky-fitness
   namespace: tk831
-  version: "0.17.3"
+  version: "1.9.0"
   valuesInline:
     postgresql:
       enabled: false
