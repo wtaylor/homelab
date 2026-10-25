@@ -27,6 +27,8 @@ spec:
         envFrom:
         - configMapRef:
             name: tandoor
+        - secretRef:
+            name: tandoor-oidc-credentials
         env:
         - name: TANDOOR_PORT
           value: "80"

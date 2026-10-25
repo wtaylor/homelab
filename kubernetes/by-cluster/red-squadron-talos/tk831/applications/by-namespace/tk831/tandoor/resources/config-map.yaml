@@ -12,3 +12,7 @@ data:
   ALLOWED_HOSTS: recipes.tk831.net
   CSRF_TRUSTED_ORIGINS: https://recipes.tk831.net
   TIME_ZONE: Europe/London
+  SOCIAL_PROVIDERS: allauth.socialaccount.providers.openid_connect
+  SOCIAL_DEFAULT_ACCESS: "1"
+  SOCIALACCOUNT_EMAIL_AUTHENTICATION: "1"
+  SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT: "1"
