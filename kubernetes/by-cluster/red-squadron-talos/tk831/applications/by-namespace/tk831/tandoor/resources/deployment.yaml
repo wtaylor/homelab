@@ -28,6 +28,8 @@ spec:
         - configMapRef:
             name: tandoor
         env:
+        - name: TANDOOR_PORT
+          value: "80"
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
