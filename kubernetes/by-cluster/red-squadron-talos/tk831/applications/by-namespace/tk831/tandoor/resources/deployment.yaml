@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tandoor
+  labels:
+    app.kubernetes.io/name: tandoor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tandoor
+  template:
+    metadata:
+      annotations:
+        app.w7x6t.dev/service: "tandoor"
+      labels:
+        app.kubernetes.io/name: tandoor
+    spec:
+      volumes:
+      - name: mediafiles
+        persistentVolumeClaim:
+          claimName: tandoor-mediafiles
+      containers:
+      - name: tandoor
+        image: ghcr.io/tandoorrecipes/recipes:2.7.1
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: tandoor
+        env:
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: tandoor-app-secrets
+              key: SECRET_KEY
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: tandoor-db-credentials
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: tandoor-db-credentials
+              key: password
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        volumeMounts:
+        - name: mediafiles
+          mountPath: /opt/recipes/mediafiles

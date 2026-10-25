@@ -78,6 +78,13 @@ spec:
       login: true
       passwordSecret:
         name: postgres-tk831-default-role-sparkyfitness-app
+    - name: tandoor
+      ensure: present
+      comment: Tandoor app user
+      superuser: false
+      login: true
+      passwordSecret:
+        name: postgres-tk831-default-role-tandoor
     services:
       additional:
       - selectorType: rw

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tandoor
+  labels:
+    app.kubernetes.io/name: tandoor
+data:
+  DB_ENGINE: django.db.backends.postgresql
+  POSTGRES_HOST: postgres-tk831-default-rw.tk831.svc.cluster.local
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: tandoor
+  ALLOWED_HOSTS: recipes.tk831.net
+  CSRF_TRUSTED_ORIGINS: https://recipes.tk831.net
+  TIME_ZONE: Europe/London

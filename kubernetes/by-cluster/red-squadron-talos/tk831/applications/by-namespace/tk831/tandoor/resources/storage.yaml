@@ -1,0 +1,68 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: tandoor-mediafiles-volsync-restic-config
+  labels:
+    app.kubernetes.io/name: tandoor
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: op-homelab
+  refreshInterval: 60m
+  target:
+    template:
+      type: kubernetes.io/Opaque
+      data:
+        RESTIC_REPOSITORY: rest:http://data-backup-server.lan.tk831.net:8080/volumes/tandoor-mediafiles
+        RESTIC_PASSWORD: "{{ .restic_password }}"
+        RESTIC_REST_USERNAME: "{{ .rclone_username }}"
+        RESTIC_REST_PASSWORD: "{{ .rclone_password }}"
+    deletionPolicy: Delete
+  data:
+  - secretKey: rclone_username
+    remoteRef:
+      key: volsync
+      property: rclone_username
+  - secretKey: rclone_password
+    remoteRef:
+      key: volsync
+      property: rclone_password
+  - secretKey: restic_password
+    remoteRef:
+      key: volsync
+      property: restic_password
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tandoor-mediafiles
+  labels:
+    app.kubernetes.io/name: tandoor
+spec:
+  storageClassName: proxmox-zfs
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 32Gi
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: tandoor-mediafiles
+spec:
+  sourcePVC: tandoor-mediafiles
+  trigger:
+    # Take a backup every night at 4am
+    schedule: "00 4 * * *"
+  restic:
+    cacheStorageClassName: proxmox-zfs
+    copyMethod: Direct
+    pruneIntervalDays: 7
+    repository: tandoor-mediafiles-volsync-restic-config
+    retain:
+      hourly: 1
+      daily: 7
+      weekly: 2
+      monthly: 2
+      yearly: 0
