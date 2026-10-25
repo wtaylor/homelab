@@ -24,4 +24,4 @@ ports:
   protocol: TCP
 endpoints:
 - addresses:
-  - "172.28.1.157"
+  - "172.28.0.245"
