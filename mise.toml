@@ -17,6 +17,7 @@ envsubst = "1.4.3"
 hk = "1.54.0"
 vector = "0.59.0"
 kubeconform = "0.8.0"
+"npm:@getpaseo/cli" = "0.13.1"
 
 [settings]
 experimental = true
