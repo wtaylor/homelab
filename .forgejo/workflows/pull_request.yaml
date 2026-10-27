@@ -1,0 +1,14 @@
+name: pull_request
+on:
+  pull_request:
+env:
+  MISE_EXPERIMENTAL: true
+  MISE_AUTO_INSTALL: true
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: jdx/mise-action@v4
+    - uses: actions/checkout@v6
+    - run: mise run hk:check
+    - run: mise run validate:kube
