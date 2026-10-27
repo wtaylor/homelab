@@ -6,9 +6,6 @@ on:
     types: [created]
   pull_request_review:
     types: [submitted]
-permissions:
-  contents: read
-  issues: write
 env:
   MISE_EXPERIMENTAL: true
   MISE_AUTO_INSTALL: true
@@ -17,7 +14,8 @@ env:
   PASEO_PROJECT: "prj_41253102bac51ef1"
 jobs:
   start_session:
-    if: forgejo.event_name == 'issues' && forgejo.event.assignee.login == 'wtaylor-ai'
+    if: >-
+      forgejo.event_name == 'issues' && forgejo.event.action == 'assigned' && contains(forgejo.event.issue.assignees.*.login, 'wtaylor-ai')
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
@@ -38,7 +36,6 @@ jobs:
       env:
         ISSUE_NUMBER: ${{ forgejo.event.issue.number }}
         WORKSPACE_ID: ${{ steps.workspace.outputs.workspace-id }}
-        FORGEJO_TOKEN: ${{ forgejo.token }}
       run: |
         if [ -z "${FORGEJO_TOKEN:-}" ]; then
           echo "No Forgejo token available to comment on the issue" >&2
@@ -100,7 +97,6 @@ jobs:
         TARGET_ON_PR: ${{ forgejo.event.issue.pull_request && 'yes' || 'no' }}
         TARGET_NUMBER: ${{ forgejo.event.issue.number }}
         TARGET_BODY: ${{ forgejo.event.issue.body }}
-        FORGEJO_TOKEN: ${{ forgejo.token }}
       run: |
         printf '%s' "${FORGEJO_TOKEN}" | fj auth add-token
         workspace_issue="${TARGET_NUMBER}"
@@ -138,7 +134,7 @@ jobs:
           "${prompt}"
   respond_to_review:
     if: >-
-      forgejo.event_name == 'pull_request_review' && (forgejo.event.review.state == 'changes_requested' || forgejo.event.review.state == 'REQUEST_CHANGES' || forgejo.event.review.state == 'request_changes') && forgejo.event.review.user.login != 'wtaylor-ai'
+      forgejo.event_name == 'pull_request_review' && forgejo.event.review.type == 'pull_request_review_rejected' && forgejo.event.sender.login != 'wtaylor-ai'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
@@ -149,7 +145,6 @@ jobs:
         PR_NUMBER: ${{ forgejo.event.pull_request.number }}
         PR_BODY: ${{ forgejo.event.pull_request.body }}
         PR_HEAD_REF: ${{ forgejo.event.pull_request.head.ref }}
-        FORGEJO_TOKEN: ${{ forgejo.token }}
       run: |
         printf '%s' "${FORGEJO_TOKEN}" | fj auth add-token
         workspace_issue="$(printf '%s' "${PR_BODY}" \
@@ -174,8 +169,8 @@ jobs:
     - name: Prompt agent
       env:
         PR_NUMBER: ${{ forgejo.event.pull_request.number }}
-        REVIEW_AUTHOR: ${{ forgejo.event.review.user.login }}
-        REVIEW_BODY: ${{ forgejo.event.review.body }}
+        REVIEW_AUTHOR: ${{ forgejo.event.sender.login }}
+        REVIEW_BODY: ${{ forgejo.event.review.content }}
       run: |
         prompt="$(printf 'Changes were requested on Forgejo pull request #%s in the wtaylor/homelab repository by %s:\n\n%s\n\nAddress the review feedback in the current workspace. Read the pull request with `fj issue view %s` for context. Make the requested changes, validate them, and push them to the existing branch. Reply to the review describing what you did.\n\nDo not merge the pull request, and do not mention @wtaylor-ai in your reply.\n' \
           "${PR_NUMBER}" "${REVIEW_AUTHOR}" "${REVIEW_BODY}" "${PR_NUMBER}")"
