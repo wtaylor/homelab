@@ -10,7 +10,7 @@ env:
   MISE_EXPERIMENTAL: true
   MISE_AUTO_INSTALL: true
   PASEO_HOST: wss://paseo.w7x6t.dev
-  PASEO_PASSWORD: "${{ secrets.PASEO_PASSWORD }}"
+  PASEO_PASSWORD: "${{ secrets.PASEO_DAEMON_PASSWORD }}"
   PASEO_PROJECT: "prj_41253102bac51ef1"
 jobs:
   start_session:
