@@ -24,6 +24,7 @@ experimental = true
 
 [settings.python]
 uv_venv_auto = "create|source"
+github_attestations = false
 
 [env]
 ANSIBLE_PIPELINING = "True"
