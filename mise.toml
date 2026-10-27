@@ -19,6 +19,8 @@ vector = "0.59.0"
 kubeconform = "0.8.0"
 "npm:@getpaseo/cli" = "0.13.1"
 yamlfmt = "0.17.2"
+cargo-binstall = "1.17.9"
+"cargo:forgejo-cli" = "0.7.0"
 
 [settings]
 experimental = true

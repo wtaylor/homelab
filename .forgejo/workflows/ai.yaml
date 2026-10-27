@@ -1,0 +1,185 @@
+name: ai
+on:
+  issues:
+    types: [assigned]
+  issue_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+permissions:
+  contents: read
+  issues: write
+env:
+  MISE_EXPERIMENTAL: true
+  MISE_AUTO_INSTALL: true
+  PASEO_HOST: wss://paseo.w7x6t.dev
+  PASEO_PASSWORD: "${{ secrets.PASEO_PASSWORD }}"
+  PASEO_PROJECT: "prj_41253102bac51ef1"
+jobs:
+  start_session:
+    if: forgejo.event_name == 'issues' && forgejo.event.assignee.login == 'wtaylor-ai'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: jdx/mise-action@v4
+    - id: workspace
+      name: Create paseo workspace
+      env:
+        ISSUE_NUMBER: ${{ forgejo.event.issue.number }}
+        ISSUE_TITLE: ${{ forgejo.event.issue.title }}
+      run: |
+        workspace_id="$(mise run paseo:workspace:create \
+          --project "${PASEO_PROJECT}" \
+          --new-branch "feat/issue-${ISSUE_NUMBER}" \
+          --base "origin/main" \
+          --title "ci: issue #${ISSUE_NUMBER} - ${ISSUE_TITLE:0:72}")"
+        echo "workspace-id=${workspace_id}" >> "$FORGEJO_OUTPUT"
+    - name: Comment on issue
+      env:
+        ISSUE_NUMBER: ${{ forgejo.event.issue.number }}
+        WORKSPACE_ID: ${{ steps.workspace.outputs.workspace-id }}
+        FORGEJO_TOKEN: ${{ forgejo.token }}
+      run: |
+        if [ -z "${FORGEJO_TOKEN:-}" ]; then
+          echo "No Forgejo token available to comment on the issue" >&2
+          exit 1
+        fi
+        printf '%s' "${FORGEJO_TOKEN}" | fj auth add-token
+        comment_file="$(mktemp)"
+        printf 'Delegating to agent: @wtaylor-ai\nworkspace: `%s`\n' "${WORKSPACE_ID}" > "${comment_file}"
+        fj issue comment "${ISSUE_NUMBER}" --body-file "${comment_file}"
+    - name: Start agent
+      env:
+        ISSUE_NUMBER: ${{ forgejo.event.issue.number }}
+      run: |
+        prompt="$(cat <<EOF
+        You are an autonomous engineer working in the wtaylor/homelab repository.
+        Forgejo issue #${ISSUE_NUMBER} has been assigned to you. Read it before you start:
+
+            fj issue view ${ISSUE_NUMBER}
+            fj issue view ${ISSUE_NUMBER} comments
+
+        Follow the repository's AGENTS.md rules. Implement the change the issue asks
+        for with the smallest reasonable diff, matching the patterns of neighbouring
+        files.
+
+        When the work is complete:
+
+        1. Build and validate every project you changed, for example:
+
+               mise run kustomize:build <path>
+               mise run validate:kube <path>
+
+        2. Commit your changes with a clear message that references the issue.
+        3. Push the branch:
+
+               git push -u origin HEAD
+
+        4. Open a pull request against main and reply with its URL, the body should contain a useful summary of the changes made and why:
+
+               fj pr create --base main '<title>' --body '<body>\n\nCloses #${ISSUE_NUMBER}'
+
+        5. Comment on the original issue with a quick comment and a link to the new PR
+
+        EOF
+        )"
+        mise run paseo:workspace:prompt \
+          --workspace-id "${{ steps.workspace.outputs.workspace-id }}" \
+          --title "issue #${ISSUE_NUMBER}" \
+          "${prompt}"
+  respond_to_comment:
+    if: >-
+      forgejo.event_name == 'issue_comment' && contains(forgejo.event.comment.body, '@wtaylor-ai') && forgejo.event.comment.user.login != 'wtaylor-ai' && !contains(forgejo.event.comment.body, 'Delegating to agent:')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: jdx/mise-action@v4
+    - id: workspace
+      name: Find workspace
+      env:
+        TARGET_ON_PR: ${{ forgejo.event.issue.pull_request && 'yes' || 'no' }}
+        TARGET_NUMBER: ${{ forgejo.event.issue.number }}
+        TARGET_BODY: ${{ forgejo.event.issue.body }}
+        FORGEJO_TOKEN: ${{ forgejo.token }}
+      run: |
+        printf '%s' "${FORGEJO_TOKEN}" | fj auth add-token
+        workspace_issue="${TARGET_NUMBER}"
+        if [ "${TARGET_ON_PR}" = "yes" ]; then
+          workspace_issue="$(printf '%s' "${TARGET_BODY}" \
+            | grep -ioE '(close[sd]?|fix(es|ed)?|resolve[sd]?)[[:space:]]+#[0-9]+' \
+            | grep -oE '[0-9]+' | head -n1 || true)"
+        fi
+        if [ -z "${workspace_issue}" ]; then
+          echo "Could not resolve the issue linked to this comment" >&2
+          exit 1
+        fi
+        workspace_id="$(fj issue view "${workspace_issue}" comments \
+          | grep -oE 'workspace: `[^`]+`' \
+          | tail -n1 \
+          | sed -E 's/^workspace: `(.*)`$/\1/')" || true
+        if [ -z "${workspace_id}" ]; then
+          echo "No workspace found on issue #${workspace_issue}" >&2
+          exit 1
+        fi
+        echo "workspace-id=${workspace_id}" >> "$FORGEJO_OUTPUT"
+    - name: Prompt agent
+      env:
+        TARGET_ON_PR: ${{ forgejo.event.issue.pull_request && 'yes' || 'no' }}
+        TARGET_NUMBER: ${{ forgejo.event.issue.number }}
+        COMMENT_AUTHOR: ${{ forgejo.event.comment.user.login }}
+        COMMENT_BODY: ${{ forgejo.event.comment.body }}
+      run: |
+        if [ "${TARGET_ON_PR}" = "yes" ]; then target="pull request"; else target="issue"; fi
+        prompt="$(printf 'A comment was posted on Forgejo %s #%s in the wtaylor/homelab repository by %s:\n\n%s\n\nAddress this comment in the current workspace. Read the %s with `fj issue view %s` for context. Make the requested changes, validate them, and push them to the existing branch. If a pull request is already open for this branch, update it and reply to the comment describing what you did; otherwise open one with `fj pr create`.\n\nDo not merge the pull request, and do not mention @wtaylor-ai in your reply.\n' \
+          "${target}" "${TARGET_NUMBER}" "${COMMENT_AUTHOR}" "${COMMENT_BODY}" "${target}" "${TARGET_NUMBER}")"
+        mise run paseo:workspace:prompt \
+          --workspace-id "${{ steps.workspace.outputs.workspace-id }}" \
+          --title "${target} #${TARGET_NUMBER} comment" \
+          "${prompt}"
+  respond_to_review:
+    if: >-
+      forgejo.event_name == 'pull_request_review' && (forgejo.event.review.state == 'changes_requested' || forgejo.event.review.state == 'REQUEST_CHANGES' || forgejo.event.review.state == 'request_changes') && forgejo.event.review.user.login != 'wtaylor-ai'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: jdx/mise-action@v4
+    - id: workspace
+      name: Find workspace
+      env:
+        PR_NUMBER: ${{ forgejo.event.pull_request.number }}
+        PR_BODY: ${{ forgejo.event.pull_request.body }}
+        PR_HEAD_REF: ${{ forgejo.event.pull_request.head.ref }}
+        FORGEJO_TOKEN: ${{ forgejo.token }}
+      run: |
+        printf '%s' "${FORGEJO_TOKEN}" | fj auth add-token
+        workspace_issue="$(printf '%s' "${PR_BODY}" \
+          | grep -ioE '(close[sd]?|fix(es|ed)?|resolve[sd]?)[[:space:]]+#[0-9]+' \
+          | grep -oE '[0-9]+' | head -n1 || true)"
+        if [ -z "${workspace_issue}" ]; then
+          workspace_issue="$(printf '%s' "${PR_HEAD_REF}" | grep -oE '[0-9]+$' || true)"
+        fi
+        if [ -z "${workspace_issue}" ]; then
+          echo "Could not resolve the issue linked to pull request #${PR_NUMBER}" >&2
+          exit 1
+        fi
+        workspace_id="$(fj issue view "${workspace_issue}" comments \
+          | grep -oE 'workspace: `[^`]+`' \
+          | tail -n1 \
+          | sed -E 's/^workspace: `(.*)`$/\1/')" || true
+        if [ -z "${workspace_id}" ]; then
+          echo "No workspace found on issue #${workspace_issue}" >&2
+          exit 1
+        fi
+        echo "workspace-id=${workspace_id}" >> "$FORGEJO_OUTPUT"
+    - name: Prompt agent
+      env:
+        PR_NUMBER: ${{ forgejo.event.pull_request.number }}
+        REVIEW_AUTHOR: ${{ forgejo.event.review.user.login }}
+        REVIEW_BODY: ${{ forgejo.event.review.body }}
+      run: |
+        prompt="$(printf 'Changes were requested on Forgejo pull request #%s in the wtaylor/homelab repository by %s:\n\n%s\n\nAddress the review feedback in the current workspace. Read the pull request with `fj issue view %s` for context. Make the requested changes, validate them, and push them to the existing branch. Reply to the review describing what you did.\n\nDo not merge the pull request, and do not mention @wtaylor-ai in your reply.\n' \
+          "${PR_NUMBER}" "${REVIEW_AUTHOR}" "${REVIEW_BODY}" "${PR_NUMBER}")"
+        mise run paseo:workspace:prompt \
+          --workspace-id "${{ steps.workspace.outputs.workspace-id }}" \
+          --title "pull request #${PR_NUMBER} review" \
+          "${prompt}"
