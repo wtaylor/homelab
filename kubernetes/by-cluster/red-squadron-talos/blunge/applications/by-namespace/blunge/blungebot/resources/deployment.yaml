@@ -22,7 +22,7 @@ spec:
         fsGroup: 1001
       containers:
       - name: blungebot
-        image: quay.io/wtaylor22/mumble-telegram-bot:61d797d
+        image: quay.io/wtaylor22/mumble-telegram-bot:cd8a609
         imagePullPolicy: IfNotPresent
         env:
         - name: RUST_LOG
