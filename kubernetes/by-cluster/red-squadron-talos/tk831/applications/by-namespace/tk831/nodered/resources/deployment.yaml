@@ -25,7 +25,7 @@ spec:
           claimName: nodered-data
       containers:
       - name: nodered
-        image: nodered/node-red:4.1.11-debian
+        image: nodered/node-red:5.0.9-debian
         imagePullPolicy: IfNotPresent
         args: [--settings=/config/settings.js]
         env:
