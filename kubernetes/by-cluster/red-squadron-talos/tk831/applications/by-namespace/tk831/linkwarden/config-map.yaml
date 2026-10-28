@@ -15,6 +15,9 @@ data:
   NEXT_PUBLIC_MAX_FILE_BUFFER: "100"
   PDF_MAX_BUFFER: "300"
   MONOLITH_MAX_BUFFER: "300"
+  # Memory limits recommended by the v2.15 release notes
+  MALLOC_ARENA_MAX: "2"
+  NODE_OPTIONS: --max-old-space-size=400
   RSS_SUBSCRIPTION_LIMIT_PER_USER: "100"
   SPACES_ENDPOINT: https://s3.tk831.net
   SPACES_REGION: us-east-1
