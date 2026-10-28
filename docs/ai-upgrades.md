@@ -147,7 +147,7 @@ inventory minus skips.
 | cert-manager | `system/cert-manager/cert-manager/kustomization.yaml` (chart v1.17.2) | charts.jetstack.io |
 | cloudnativepg-operator | `system/cnpg-system/cloudnativepg-operator/kustomization.yaml` (remote `cnpg-1.27.0.yaml`) | github.com/cloudnative-pg/cloudnative-pg |
 | csi-proxmox | `system/csi-proxmox/csi-proxmox/kustomization.yaml` (remote `?ref=v0.17.1`) | github.com/sergelogvinov/proxmox-csi-plugin |
-| envoy-gateway | `system/envoy-gateway-system/envoy-gateway/kustomization.yaml` (remote `v1.7.2/install.yaml`) | github.com/envoyproxy/gateway |
+| envoy-gateway | `system/envoy-gateway-system/envoy-gateway/kustomization.yaml` (remote `v1.9.3/install.yaml`) | github.com/envoyproxy/gateway |
 | external-secrets | `system/external-secrets/external-secrets/kustomization.yaml` (chart 2.10.0) | charts.external-secrets.io |
 | cilium | `system/kube-system/cilium/kustomization.yaml` (chart 1.17.4) | helm.cilium.io |
 | vector-agent | `system/vector/vector-agent/kustomization.yaml` (chart v0.59.0) | helm.vector.dev |
