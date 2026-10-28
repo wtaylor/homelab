@@ -183,7 +183,7 @@ inventory minus skips.
 | op-connect | `bootstrap/external-secrets/op-connect/kustomization.yaml` (chart 2.4.1) | github.com/1Password/connect-helm-charts |
 | forgejo | `workloads/development/forgejo/kustomization.yaml` (chart 17.1.1, OCI) | code.forgejo.org/forgejo-helm |
 | grafana | `workloads/grafana/grafana/resources/grafana.yaml` (Grafana CR `spec.version` 13.2.4) | grafana releases |
-| kanidm | `workloads/kanidm/kanidm/resources/statefulset.yaml` (image `kanidm/server:1.10.3`) | github.com/kanidm/kanidm |
+| kanidm | `workloads/kanidm/kanidm/resources/statefulset.yaml` (image `kanidm/server:1.11.2`) | github.com/kanidm/kanidm |
 | vector-agent | `workloads/vector/vector-agent/kustomization.yaml` (chart v0.59.0) | helm.vector.dev |
 | vector-aggregator | `workloads/vector/vector-aggregator/kustomization.yaml` (chart v0.59.0) | helm.vector.dev |
 | vm-k8s-stack | `workloads/victoria-metrics/vm-k8s-stack/kustomization.yaml` (chart 0.97.0) | victoriametrics.github.io/helm-charts |
