@@ -16,7 +16,7 @@ helmCharts:
   namespace: vector
   repo: https://helm.vector.dev
   name: vector
-  version: v0.59.0
+  version: v0.60.0
   valuesInline:
     role: Aggregator
     podAnnotations:

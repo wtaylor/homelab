@@ -185,7 +185,7 @@ inventory minus skips.
 | grafana | `workloads/grafana/grafana/resources/grafana.yaml` (Grafana CR, **unpinned**) | grafana releases |
 | kanidm | `workloads/kanidm/kanidm/resources/statefulset.yaml` (image `kanidm/server:1.10.3`) | github.com/kanidm/kanidm |
 | vector-agent | `workloads/vector/vector-agent/kustomization.yaml` (chart v0.59.0) | helm.vector.dev |
-| vector-aggregator | `workloads/vector/vector-aggregator/kustomization.yaml` (chart v0.59.0) | helm.vector.dev |
+| vector-aggregator | `workloads/vector/vector-aggregator/kustomization.yaml` (chart v0.60.0) | helm.vector.dev |
 | vm-k8s-stack | `workloads/victoria-metrics/vm-k8s-stack/kustomization.yaml` (chart 0.95.2) | victoriametrics.github.io/helm-charts |
 | vm-storage | `workloads/victoria-metrics/vm-storage/kustomization.yaml` (chart 2.8.1, OCI) | ghcr.io/reliablyobserve/charts (loki-vl-proxy) |
 | paseo-proxy | Service/HTTPRoute only | - (skip) |
