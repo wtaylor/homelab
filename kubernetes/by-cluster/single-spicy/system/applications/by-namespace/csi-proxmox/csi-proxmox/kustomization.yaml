@@ -3,7 +3,7 @@ commonAnnotations:
   app.w7x6t.dev/application: "csi-proxmox"
 namespace: csi-proxmox
 resources:
-- https://raw.githubusercontent.com/sergelogvinov/proxmox-csi-plugin/v0.18.1/docs/deploy/proxmox-csi-plugin-release.yml
+- https://raw.githubusercontent.com/sergelogvinov/proxmox-csi-plugin/v0.21.0/docs/deploy/proxmox-csi-plugin-release.yml
 - resources/cluster-config-secret.yaml
 - resources/storage-class.yaml
 patches:
