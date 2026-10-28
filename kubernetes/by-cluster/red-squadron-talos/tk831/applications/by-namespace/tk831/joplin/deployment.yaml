@@ -22,7 +22,7 @@ spec:
           claimName: joplin-data-pvc
       containers:
       - name: joplin
-        image: joplin/server:3.5.2
+        image: joplin/server:3.7.3
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
