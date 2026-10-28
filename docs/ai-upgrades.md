@@ -174,7 +174,7 @@ inventory minus skips.
 | --- | --- | --- |
 | cert-manager | `system/cert-manager/cert-manager/kustomization.yaml` (chart v1.21.3) | charts.jetstack.io |
 | csi-proxmox | `system/csi-proxmox/csi-proxmox/kustomization.yaml` (remote `?ref=v0.18.1`) | github.com/sergelogvinov/proxmox-csi-plugin |
-| envoy-gateway | `system/envoy-gateway-system/envoy-gateway/kustomization.yaml` (remote `v1.8.0/install.yaml`) | github.com/envoyproxy/gateway |
+| envoy-gateway | `system/envoy-gateway-system/envoy-gateway/kustomization.yaml` (remote `v1.9.3/install.yaml`) | github.com/envoyproxy/gateway |
 | external-secrets | `system/external-secrets/external-secrets/kustomization.yaml` (chart 2.9.0) | charts.external-secrets.io |
 | grafana-operator | `system/grafana/grafana-operator/kustomization.yaml` (chart 5.25.0, OCI) | ghcr.io/grafana/helm-charts |
 | cilium | `system/kube-system/cilium/kustomization.yaml` (chart 1.19.4) | helm.cilium.io |

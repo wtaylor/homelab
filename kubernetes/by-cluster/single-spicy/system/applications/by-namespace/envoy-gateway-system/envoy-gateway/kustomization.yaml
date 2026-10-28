@@ -3,7 +3,7 @@ commonAnnotations:
   app.w7x6t.dev/application: "envoy-gateway"
 namespace: envoy-gateway-system
 resources:
-- https://github.com/envoyproxy/gateway/releases/download/v1.8.0/install.yaml
+- https://github.com/envoyproxy/gateway/releases/download/v1.9.3/install.yaml
 - resources/gatewayclass.yaml
 patches:
 - patch: |
