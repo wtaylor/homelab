@@ -131,13 +131,13 @@ inventory minus skips.
   conclude they aren't applications.
 - `fj issue create` lacks a label option; forgetting `labels -a upgrade` makes
   the issue invisible to `fj issue search -l upgrade`.
-- Unpinned software: the grafana Grafana CR has no version; the operator fills
-  in its default. Report the operator default as "current" and note the
-  un-pinned status.
+- Unpinned software: a Grafana CR without `spec.version` follows the operator
+  default. Report the operator default as "current" and note the un-pinned
+  status (grafana now pins `spec.version`).
 - fj warns `mise WARN ... uv is not installed` on every invocation - harmless,
   filter with `grep -v 'mise WARN'`.
 
-## Pin map (as of 2026-10-26)
+## Pin map (as of 2026-10-28)
 
 ### red-squadron-talos
 
@@ -182,7 +182,7 @@ inventory minus skips.
 | volsync | `system/volsync-system/volsync/kustomization.yaml` (chart v0.15.0) | backube.github.io/helm-charts |
 | op-connect | `bootstrap/external-secrets/op-connect/kustomization.yaml` (chart 2.4.1) | github.com/1Password/connect-helm-charts |
 | forgejo | `workloads/development/forgejo/kustomization.yaml` (chart 17.1.1, OCI) | code.forgejo.org/forgejo-helm |
-| grafana | `workloads/grafana/grafana/resources/grafana.yaml` (Grafana CR, **unpinned**) | grafana releases |
+| grafana | `workloads/grafana/grafana/resources/grafana.yaml` (Grafana CR `spec.version` 13.2.4) | grafana releases |
 | kanidm | `workloads/kanidm/kanidm/resources/statefulset.yaml` (image `kanidm/server:1.10.3`) | github.com/kanidm/kanidm |
 | vector-agent | `workloads/vector/vector-agent/kustomization.yaml` (chart v0.59.0) | helm.vector.dev |
 | vector-aggregator | `workloads/vector/vector-aggregator/kustomization.yaml` (chart v0.59.0) | helm.vector.dev |
