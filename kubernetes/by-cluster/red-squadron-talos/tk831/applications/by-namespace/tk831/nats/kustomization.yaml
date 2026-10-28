@@ -10,7 +10,7 @@ helmCharts:
   repo: https://nats-io.github.io/k8s/helm/charts/
   releaseName: nats
   namespace: tk831
-  version: "1.1.12"
+  version: "2.15.1"
   valuesInline:
     config:
       cluster:
