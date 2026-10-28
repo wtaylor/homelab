@@ -5,6 +5,7 @@ metadata:
   labels:
     dashboards: grafana
 spec:
+  version: 13.2.4
   persistentVolumeClaim:
     spec:
       accessModes:

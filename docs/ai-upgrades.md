@@ -131,27 +131,27 @@ inventory minus skips.
   conclude they aren't applications.
 - `fj issue create` lacks a label option; forgetting `labels -a upgrade` makes
   the issue invisible to `fj issue search -l upgrade`.
-- Unpinned software: the grafana Grafana CR has no version; the operator fills
-  in its default. Report the operator default as "current" and note the
-  un-pinned status.
+- Unpinned software: a Grafana CR without `spec.version` follows the operator
+  default. Report the operator default as "current" and note the un-pinned
+  status (grafana now pins `spec.version`).
 - fj warns `mise WARN ... uv is not installed` on every invocation - harmless,
   filter with `grep -v 'mise WARN'`.
 
-## Pin map (as of 2026-10-26)
+## Pin map (as of 2026-10-28)
 
 ### red-squadron-talos
 
 | Application | Pin location | Upstream |
 | --- | --- | --- |
-| argocd | `system/argocd/argocd/kustomization.yaml` (remote base `?ref=v3.4.3`) | github.com/argoproj/argo-cd |
+| argocd | `system/argocd/argocd/kustomization.yaml` (remote base `?ref=v3.5.6`) | github.com/argoproj/argo-cd |
 | cert-manager | `system/cert-manager/cert-manager/kustomization.yaml` (chart v1.17.2) | charts.jetstack.io |
 | cloudnativepg-operator | `system/cnpg-system/cloudnativepg-operator/kustomization.yaml` (remote `cnpg-1.27.0.yaml`) | github.com/cloudnative-pg/cloudnative-pg |
 | csi-proxmox | `system/csi-proxmox/csi-proxmox/kustomization.yaml` (remote `?ref=v0.17.1`) | github.com/sergelogvinov/proxmox-csi-plugin |
-| envoy-gateway | `system/envoy-gateway-system/envoy-gateway/kustomization.yaml` (remote `v1.7.2/install.yaml`) | github.com/envoyproxy/gateway |
+| envoy-gateway | `system/envoy-gateway-system/envoy-gateway/kustomization.yaml` (remote `v1.9.3/install.yaml`) | github.com/envoyproxy/gateway |
 | external-secrets | `system/external-secrets/external-secrets/kustomization.yaml` (chart 2.10.0) | charts.external-secrets.io |
 | cilium | `system/kube-system/cilium/kustomization.yaml` (chart 1.17.4) | helm.cilium.io |
 | vector-agent | `system/vector/vector-agent/kustomization.yaml` (chart v0.60.0) | helm.vector.dev |
-| volsync | `system/volsync-system/volsync/kustomization.yaml` (chart v0.12.1) | backube.github.io/helm-charts |
+| volsync | `system/volsync-system/volsync/kustomization.yaml` (chart v0.17.0) | backube.github.io/helm-charts |
 | blungebot | `blunge/blungebot/resources/deployment.yaml` (image tag) | in-house, no releases |
 | bitwarden (vaultwarden) | `tk831/.../bitwarden/deployment.yaml` (image `vaultwarden/server:1.37.1`) | github.com/dani-garcia/vaultwarden |
 | frigate | `tk831/.../frigate/resources/deployment.yaml` (image) | github.com/blakeblackshear/frigate |
@@ -172,9 +172,9 @@ inventory minus skips.
 
 | Application | Pin location | Upstream |
 | --- | --- | --- |
-| cert-manager | `system/cert-manager/cert-manager/kustomization.yaml` (chart v1.20.2) | charts.jetstack.io |
+| cert-manager | `system/cert-manager/cert-manager/kustomization.yaml` (chart v1.21.3) | charts.jetstack.io |
 | csi-proxmox | `system/csi-proxmox/csi-proxmox/kustomization.yaml` (remote `?ref=v0.18.1`) | github.com/sergelogvinov/proxmox-csi-plugin |
-| envoy-gateway | `system/envoy-gateway-system/envoy-gateway/kustomization.yaml` (remote `v1.8.0/install.yaml`) | github.com/envoyproxy/gateway |
+| envoy-gateway | `system/envoy-gateway-system/envoy-gateway/kustomization.yaml` (remote `v1.9.3/install.yaml`) | github.com/envoyproxy/gateway |
 | external-secrets | `system/external-secrets/external-secrets/kustomization.yaml` (chart 2.9.0) | charts.external-secrets.io |
 | grafana-operator | `system/grafana/grafana-operator/kustomization.yaml` (chart 5.25.0, OCI) | ghcr.io/grafana/helm-charts |
 | cilium | `system/kube-system/cilium/kustomization.yaml` (chart 1.19.4) | helm.cilium.io |
@@ -182,11 +182,11 @@ inventory minus skips.
 | volsync | `system/volsync-system/volsync/kustomization.yaml` (chart v0.15.0) | backube.github.io/helm-charts |
 | op-connect | `bootstrap/external-secrets/op-connect/kustomization.yaml` (chart 2.4.1) | github.com/1Password/connect-helm-charts |
 | forgejo | `workloads/development/forgejo/kustomization.yaml` (chart 17.1.1, OCI) | code.forgejo.org/forgejo-helm |
-| grafana | `workloads/grafana/grafana/resources/grafana.yaml` (Grafana CR, **unpinned**) | grafana releases |
+| grafana | `workloads/grafana/grafana/resources/grafana.yaml` (Grafana CR `spec.version` 13.2.4) | grafana releases |
 | kanidm | `workloads/kanidm/kanidm/resources/statefulset.yaml` (image `kanidm/server:1.10.3`) | github.com/kanidm/kanidm |
 | vector-agent | `workloads/vector/vector-agent/kustomization.yaml` (chart v0.59.0) | helm.vector.dev |
 | vector-aggregator | `workloads/vector/vector-aggregator/kustomization.yaml` (chart v0.59.0) | helm.vector.dev |
-| vm-k8s-stack | `workloads/victoria-metrics/vm-k8s-stack/kustomization.yaml` (chart 0.95.2) | victoriametrics.github.io/helm-charts |
+| vm-k8s-stack | `workloads/victoria-metrics/vm-k8s-stack/kustomization.yaml` (chart 0.97.0) | victoriametrics.github.io/helm-charts |
 | vm-storage | `workloads/victoria-metrics/vm-storage/kustomization.yaml` (chart 2.8.1, OCI) | ghcr.io/reliablyobserve/charts (loki-vl-proxy) |
 | paseo-proxy | Service/HTTPRoute only | - (skip) |
 | default-cluster-gateway | Gateway/Certificates/EnvoyProxy CRs | - (skip) |
