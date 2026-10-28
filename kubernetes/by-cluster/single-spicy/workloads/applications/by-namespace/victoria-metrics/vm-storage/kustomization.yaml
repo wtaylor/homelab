@@ -11,7 +11,7 @@ helmCharts:
   namespace: victoria-metrics
   repo: oci://ghcr.io/reliablyobserve/charts
   name: loki-vl-proxy
-  version: "2.8.1"
+  version: "2.35.0"
   skipTests: true
   valuesInline:
     podAnnotations:
