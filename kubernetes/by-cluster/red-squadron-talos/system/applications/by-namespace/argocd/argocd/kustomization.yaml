@@ -5,7 +5,7 @@ commonAnnotations:
   app.w7x6t.dev/application: "argocd"
 namespace: argocd
 resources:
-- github.com/argoproj/argo-cd/manifests/cluster-install?ref=v3.4.3
+- github.com/argoproj/argo-cd/manifests/cluster-install?ref=v3.5.6
 # - ./resources/ingress.yaml
 - ./resources/routes.yaml
 - ./resources/oidc-credentials.yaml

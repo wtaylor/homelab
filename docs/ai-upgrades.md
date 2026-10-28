@@ -143,7 +143,7 @@ inventory minus skips.
 
 | Application | Pin location | Upstream |
 | --- | --- | --- |
-| argocd | `system/argocd/argocd/kustomization.yaml` (remote base `?ref=v3.4.3`) | github.com/argoproj/argo-cd |
+| argocd | `system/argocd/argocd/kustomization.yaml` (remote base `?ref=v3.5.6`) | github.com/argoproj/argo-cd |
 | cert-manager | `system/cert-manager/cert-manager/kustomization.yaml` (chart v1.17.2) | charts.jetstack.io |
 | cloudnativepg-operator | `system/cnpg-system/cloudnativepg-operator/kustomization.yaml` (remote `cnpg-1.27.0.yaml`) | github.com/cloudnative-pg/cloudnative-pg |
 | csi-proxmox | `system/csi-proxmox/csi-proxmox/kustomization.yaml` (remote `?ref=v0.17.1`) | github.com/sergelogvinov/proxmox-csi-plugin |
