@@ -8,7 +8,7 @@ helmCharts:
 - releaseName: op-connect
   name: connect
   repo: https://1password.github.io/connect-helm-charts
-  version: "2.4.1"
+  version: "2.4.3"
   namespace: external-secrets
   skipTests: true
 secretGenerator:
