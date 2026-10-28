@@ -150,7 +150,7 @@ inventory minus skips.
 | envoy-gateway | `system/envoy-gateway-system/envoy-gateway/kustomization.yaml` (remote `v1.7.2/install.yaml`) | github.com/envoyproxy/gateway |
 | external-secrets | `system/external-secrets/external-secrets/kustomization.yaml` (chart 2.10.0) | charts.external-secrets.io |
 | cilium | `system/kube-system/cilium/kustomization.yaml` (chart 1.17.4) | helm.cilium.io |
-| vector-agent | `system/vector/vector-agent/kustomization.yaml` (chart v0.59.0) | helm.vector.dev |
+| vector-agent | `system/vector/vector-agent/kustomization.yaml` (chart v0.60.0) | helm.vector.dev |
 | volsync | `system/volsync-system/volsync/kustomization.yaml` (chart v0.12.1) | backube.github.io/helm-charts |
 | blungebot | `blunge/blungebot/resources/deployment.yaml` (image tag) | in-house, no releases |
 | bitwarden (vaultwarden) | `tk831/.../bitwarden/deployment.yaml` (image `vaultwarden/server:1.37.1`) | github.com/dani-garcia/vaultwarden |
