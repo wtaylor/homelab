@@ -4,17 +4,17 @@ commonAnnotations:
 helmCharts:
 - name: immich
   includeCRDs: false
-  repo: https://immich-app.github.io/immich-charts
+  repo: oci://ghcr.io/immich-app/immich-charts
   releaseName: immich
   namespace: tk831
-  version: "0.10.3"
+  version: "0.13.4"
   valuesInline:
     controllers:
       main:
         containers:
           main:
             image:
-              tag: v2.4.1
+              tag: v3.3.5
     immich:
       metrics:
         # Enabling this will create the service monitors needed to monitor immich with the prometheus operator
@@ -64,9 +64,7 @@ helmCharts:
       persistence:
         cache:
           enabled: true
-          size: 10Gi
           type: emptyDir
-          accessMode: ReadWriteOnce
 resources:
 - resources/library-pvc.yaml
 - resources/db-cluster-admin-credentials.yaml

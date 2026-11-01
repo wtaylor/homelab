@@ -156,7 +156,7 @@ inventory minus skips.
 | bitwarden (vaultwarden) | `tk831/.../bitwarden/deployment.yaml` (image `vaultwarden/server:1.37.1`) | github.com/dani-garcia/vaultwarden |
 | frigate | `tk831/.../frigate/resources/deployment.yaml` (image) | github.com/blakeblackshear/frigate |
 | homeassistant | `tk831/.../homeassistant/deployment.yaml` (image) | home-assistant releases |
-| immich | `tk831/.../immich/kustomization.yaml` (chart 0.10.3 + image tag) | immich-app/immich-charts + immich |
+| immich | `tk831/.../immich/kustomization.yaml` (chart 0.13.4 + image tag) | immich-app/immich-charts (OCI) + immich |
 | joplin | `tk831/.../joplin/deployment.yaml` (image `joplin/server:3.5.2`) | github.com/laurent22/joplin (server) |
 | linkwarden | `tk831/.../linkwarden/deployment.yaml` (image) | github.com/linkwarden/linkwarden |
 | nats | `tk831/.../nats/kustomization.yaml` (chart 1.1.12) | nats-io.github.io/k8s/helm/charts |
