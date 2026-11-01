@@ -58,7 +58,9 @@ jobs:
 
         Follow the repository's AGENTS.md rules. Implement the change the issue asks
         for with the smallest reasonable diff, matching the patterns of neighbouring
-        files.
+        files. Don't attempt to make changes to other repositories than this one,
+        your work is scoped to the repo only, for example, application sets pointing
+        to other repos should be ignored.
 
         When the work is complete:
 
