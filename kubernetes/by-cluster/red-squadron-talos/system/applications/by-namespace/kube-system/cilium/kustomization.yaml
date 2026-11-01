@@ -9,8 +9,9 @@ helmCharts:
   repo: https://helm.cilium.io/
   releaseName: cilium
   namespace: kube-system
-  version: "1.17.4"
+  version: "1.20.4"
   valuesInline:
+    upgradeCompatibility: "1.17"
     rollOutCiliumPods: true
     podAnnotations:
       app.w7x6t.dev/service: "cilium"
