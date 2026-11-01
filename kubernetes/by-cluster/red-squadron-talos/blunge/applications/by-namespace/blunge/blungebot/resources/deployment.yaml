@@ -22,6 +22,7 @@ spec:
         fsGroup: 1001
       containers:
       - name: blungebot
+        # NOTE: image migration to an fj package is planned; this PR is pending that move.
         image: quay.io/wtaylor22/mumble-telegram-bot:cd8a609
         imagePullPolicy: IfNotPresent
         env:
