@@ -22,7 +22,7 @@ spec:
           claimName: tandoor-mediafiles
       containers:
       - name: tandoor
-        image: ghcr.io/tandoorrecipes/recipes:2.7.1
+        image: ghcr.io/tandoorrecipes/recipes:2.7.2
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
