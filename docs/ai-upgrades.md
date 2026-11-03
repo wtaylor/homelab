@@ -163,7 +163,7 @@ inventory minus skips.
 | nodered | `tk831/.../nodered/resources/deployment.yaml` (image) | github.com/node-red/node-red |
 | postgres-default | `tk831/.../postgres-default/cluster.yaml` (`imageName: ...postgresql:15.1`) | ghcr.io/cloudnative-pg/postgresql |
 | sparky-fitness | `tk831/.../sparky-fitness/kustomization.yaml` (chart, OCI) | ghcr.io/codewithcj/charts |
-| vector-nats-home-wiretap | `tk831/.../vector-nats-home-wiretap/kustomization.yaml` (chart v0.59.0) | helm.vector.dev |
+| vector-nats-home-wiretap | `tk831/.../vector-nats-home-wiretap/kustomization.yaml` (chart v0.61.0) | helm.vector.dev |
 | zigbee2mqtt | `tk831/.../zigbee2mqtt/deployment.yaml` (image) | github.com/Koenkk/zigbee2mqtt |
 | bootstrap-external-secrets | namespace + secret only | - (skip) |
 | default-cluster-gateway | Gateway/Certificates/EnvoyProxy CRs | - (skip) |
