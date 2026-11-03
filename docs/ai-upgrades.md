@@ -178,7 +178,7 @@ inventory minus skips.
 | external-secrets | `system/external-secrets/external-secrets/kustomization.yaml` (chart 2.9.0) | charts.external-secrets.io |
 | grafana-operator | `system/grafana/grafana-operator/kustomization.yaml` (chart 5.25.0, OCI) | ghcr.io/grafana/helm-charts |
 | cilium | `system/kube-system/cilium/kustomization.yaml` (chart 1.20.4) | helm.cilium.io |
-| vm-operator | `system/victoria-metrics/vm-operator/kustomization.yaml` (chart 0.68.1) | victoriametrics.github.io/helm-charts |
+| vm-operator | `system/victoria-metrics/vm-operator/kustomization.yaml` (chart 0.68.2) | victoriametrics.github.io/helm-charts |
 | volsync | `system/volsync-system/volsync/kustomization.yaml` (chart v0.15.0) | backube.github.io/helm-charts |
 | op-connect | `bootstrap/external-secrets/op-connect/kustomization.yaml` (chart 2.4.1) | github.com/1Password/connect-helm-charts |
 | forgejo | `workloads/development/forgejo/kustomization.yaml` (chart 17.1.1, OCI) | code.forgejo.org/forgejo-helm |

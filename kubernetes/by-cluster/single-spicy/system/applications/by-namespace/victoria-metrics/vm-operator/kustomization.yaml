@@ -6,12 +6,9 @@ helmCharts:
   namespace: victoria-metrics
   repo: https://victoriametrics.github.io/helm-charts
   name: victoria-metrics-operator
-  version: 0.68.1
+  version: 0.68.2
   valuesInline:
     nameOverride: 'vm-operator'
-    # Chart 0.68.1 ships operator v0.75.0; bump until a chart ships v0.75.1.
-    image:
-      tag: v0.75.1
     admissionWebhooks:
       enabled: true
       certManager:
