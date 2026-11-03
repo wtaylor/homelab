@@ -182,7 +182,7 @@ inventory minus skips.
 | volsync | `system/volsync-system/volsync/kustomization.yaml` (chart v0.15.0) | backube.github.io/helm-charts |
 | op-connect | `bootstrap/external-secrets/op-connect/kustomization.yaml` (chart 2.4.1) | github.com/1Password/connect-helm-charts |
 | forgejo | `workloads/development/forgejo/kustomization.yaml` (chart 17.1.1, OCI) | code.forgejo.org/forgejo-helm |
-| grafana | `workloads/grafana/grafana/resources/grafana.yaml` (Grafana CR `spec.version` 13.2.4) | grafana releases |
+| grafana | `workloads/grafana/grafana/resources/grafana.yaml` (Grafana CR `spec.version` 13.3.0) | grafana releases |
 | kanidm | `workloads/kanidm/kanidm/resources/statefulset.yaml` (image `kanidm/server:1.12.0`) | github.com/kanidm/kanidm |
 | vector-agent | `workloads/vector/vector-agent/kustomization.yaml` (chart v0.59.0) | helm.vector.dev |
 | vector-aggregator | `workloads/vector/vector-aggregator/kustomization.yaml` (chart v0.60.0) | helm.vector.dev |
