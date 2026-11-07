@@ -1,6 +1,6 @@
 terraform {
   extra_arguments "common_vars" {
-    commands = ["init", "plan", "apply", "import", "destroy", "state"]
+    commands = ["init", "plan", "apply", "import", "destroy", "state", "refresh", "output"]
     env_vars = {
       AWS_REQUEST_CHECKSUM_CALCULATION = "when_required"
       AWS_RESPONSE_CHECKSUM_VALIDATION = "when_required"

@@ -1,0 +1,7 @@
+commonAnnotations:
+  app.w7x6t.dev/part-of: "homelab"
+  app.w7x6t.dev/application: "databasus-proxy"
+namespace: development
+resources:
+- resources/service.yaml
+- resources/routes.yaml

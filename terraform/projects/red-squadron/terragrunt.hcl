@@ -4,7 +4,7 @@ include "root" {
 
 terraform {
   extra_arguments "extra_vars" {
-    commands = ["init", "plan", "apply", "import"]
+    commands = ["init", "plan", "apply", "import", "state", "refresh", "output"]
     env_vars = {
       PROXMOX_VE_USERNAME = "${get_env("SECRETS_PVE_RED_SQUADRON_USERNAME")}"
       PROXMOX_VE_PASSWORD = "${get_env("SECRETS_PVE_RED_SQUADRON_PASSWORD")}"

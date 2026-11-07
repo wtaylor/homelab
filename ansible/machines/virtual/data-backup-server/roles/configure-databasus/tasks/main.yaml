@@ -15,7 +15,7 @@
   containers.podman.podman_container:
     name: databasus
     state: quadlet
-    image: docker.io/databasus/databasus:v3.32.2
+    image: docker.io/databasus/databasus:v3.64.0
     volume:
     - /var/mnt/backup/data/databasus/data:/databasus-data:z
     ports:
@@ -32,7 +32,7 @@
       [Install]
       WantedBy=default.target
   register: container_definition
-- name: systemd daemon-reload
+- name: Systemd daemon-reload
   become: true
   ansible.builtin.systemd:
     daemon_reload: true

@@ -88,6 +88,7 @@ data "talos_machine_configuration" "node_mc" {
   machine_type     = var.node_role
   cluster_endpoint = "https://${var.cluster_vip}:6443"
   machine_secrets  = var.node_talos_secrets_machine_secrets
+  talos_version    = var.talos_version
 }
 
 resource "talos_machine_configuration_apply" "node_mc" {

@@ -1,0 +1,27 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: databasus-proxy
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 8081
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: databasus-proxy-http-1
+  labels:
+    kubernetes.io/service-name: databasus-proxy
+addressType: IPv4
+ports:
+- name: http
+  port: 8081
+  protocol: TCP
+endpoints:
+- addresses:
+  - "172.28.1.118"

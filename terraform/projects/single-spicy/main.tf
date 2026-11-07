@@ -84,6 +84,7 @@ module "talos_nodes" {
   source   = "../../modules/talos-node"
   for_each = local.talos_nodes
 
+  talos_version        = local.talos_version
   vm_host_cluster_name = local.host_cluster_name
   vm_host_node_name    = each.value.host_node_name
   vm_id                = each.value.vm_id

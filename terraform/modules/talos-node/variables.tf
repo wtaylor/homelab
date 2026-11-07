@@ -102,3 +102,7 @@ variable "node_execute_talos_bootstrap" {
 variable "certSANs" {
   type = list(string)
 }
+
+variable "talos_version" {
+  type = string
+}
