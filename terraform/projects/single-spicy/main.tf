@@ -1,6 +1,6 @@
 locals {
   vault         = "rywytgveqosp6sijtoepddc6ta" #Homelab
-  talos_version = "v1.13.3"
+  talos_version = "v1.14.5"
 
   cluster_vip  = "172.28.2.20"
   cluster_name = "single-spicy"

@@ -81,6 +81,10 @@ resource "proxmox_virtual_environment_vm" "node_vm" {
       }
     }
   }
+
+  lifecycle {
+    ignore_changes = [cdrom, disk]
+  }
 }
 
 data "talos_machine_configuration" "node_mc" {
@@ -161,6 +165,10 @@ resource "talos_machine_configuration_apply" "node_mc" {
         }
         apiServer = {
           certSANs = var.certSANs
+        }
+        controllerManager = {
+        }
+        scheduler = {
         }
         extraManifests = var.node_deploy_bootstrap_manifests ? [
           "https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/refs/tags/v0.9.1/deploy/standalone-install.yaml",

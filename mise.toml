@@ -21,6 +21,7 @@ kubeconform = "0.8.0"
 yamlfmt = "0.17.2"
 cargo-binstall = "1.17.9"
 "cargo:forgejo-cli" = "0.7.0"
+talosctl = { version = "1.14.5", exe = "talosctl" }
 
 [settings]
 experimental = true
