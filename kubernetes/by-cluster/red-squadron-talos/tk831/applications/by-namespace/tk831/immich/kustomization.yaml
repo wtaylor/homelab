@@ -14,7 +14,7 @@ helmCharts:
         containers:
           main:
             image:
-              tag: v3.3.5
+              tag: v3.3.6
     immich:
       metrics:
         # Enabling this will create the service monitors needed to monitor immich with the prometheus operator
