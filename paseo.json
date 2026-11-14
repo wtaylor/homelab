@@ -1,6 +1,6 @@
 {
   "worktree": {
-    "setup": "git pull"
+    "setup": "mise i"
   },
   "metadataGeneration": {
     "branchName": {
