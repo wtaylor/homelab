@@ -1,0 +1,13 @@
+{
+  "worktree": {
+    "setup": "git pull"
+  },
+  "metadataGeneration": {
+    "branchName": {
+      "instructions": "Prefix branches with feat/ fix/ upgrade/ docs/ or ci/, categorising the type of work"
+    },
+    "commitMessage": {
+      "instructions": "Use conventional commits with a scope where appropriate."
+    }
+  }
+}
